@@ -25,7 +25,8 @@ include_directories(src/
                     src/models/
                     src/shaders/
                     src/textures/
-                    src/toolbox/
+                    src/utilities/
+                    src/entities/
                     lib/glad/include/
                     lib/glfw/include/
                     lib/glm/
@@ -33,27 +34,29 @@ include_directories(src/
 
 #sources
 file(GLOB VENDORS_SOURCES lib/glad/src/glad.c)
-file(GLOB PROJECT_HEADERS src/*.h
-                          src/engine/*.h
-                          src/models/*.h
-                          src/shaders/*.h
-                          src/textures/*.h
-                          toolbox/*.h)
-file(GLOB PROJECT_SOURCES src/*.cpp
-                          src/engine/*.cpp
-                          src/models/*.cpp
-                          src/shaders/*.cpp
-                          src/textures/*.cpp
-                          toolbox/*.cpp)
-file(GLOB PROJECT_SHADERS src/Shaders/*.comp
-                          src/Shaders/*.frag
-                          src/Shaders/*.geom
-                          src/Shaders/*.vert)
-file(GLOB PROJECT_CONFIGS CMakeLists.txt
-                          README.md
-                          .gitattributes
-                          .gitignore
-                          .gitmodules)
+file(GLOB PROJECT_HEADERS   src/*.h
+                            src/engine/*.h
+                            src/models/*.h
+                            src/shaders/*.h
+                            src/textures/*.h
+                            src/utilities/*.h
+                            src/entities/*.h)
+file(GLOB PROJECT_SOURCES   src/*.cpp
+                            src/engine/*.cpp
+                            src/models/*.cpp
+                            src/shaders/*.cpp
+                            src/textures/*.cpp
+                            src/utilities/*.cpp
+                            src/entities/*.cpp)
+file(GLOB PROJECT_SHADERS   src/Shaders/*.comp
+                            src/Shaders/*.frag
+                            src/Shaders/*.geom
+                            src/Shaders/*.vert)
+file(GLOB PROJECT_CONFIGS   CMakeLists.txt
+                            README.md
+                            .gitattributes
+                            .gitignore
+                            .gitmodules)
 
 #source groups
 source_group("Headers" FILES ${PROJECT_HEADERS})
@@ -83,11 +86,10 @@ add_definitions(-DGLFW_INCLUDE_NONE
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
         ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
         ${VENDORS_SOURCES})
-#link libraries                               
+#link libraries
 target_link_libraries(${PROJECT_NAME} glfw
         ${GLFW_LIBRARIES} ${GLAD_LIBRARIES})
 set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
 add_dependencies(${PROJECT_NAME} copy_resources)
-

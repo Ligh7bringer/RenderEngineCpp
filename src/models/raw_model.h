@@ -14,6 +14,7 @@ public:
         _vertexCount = count;
     }
 
+    //getters
     unsigned int get_vaoID() const { return _vaoID; }
     int get_vertexCount() const { return _vertexCount; }
 

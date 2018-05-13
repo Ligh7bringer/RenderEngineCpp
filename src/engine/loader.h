@@ -6,20 +6,20 @@
 
 class Loader {
 public:
-    RawModel loadToVAO(vector<float> &positions, vector<unsigned int> &indices, vector<float> &texCoords);
-    void cleanUp();
-    unsigned int loadTexture(const std::string &fileName);
+    static RawModel loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &texCoords);
+    static void cleanUp();
+    static unsigned int loadTexture(const std::string &fileName);
 
 private:
-    std::vector<unsigned int> _vaos;
-    std::vector<unsigned int> _vbos;
-    std::vector<unsigned int> _textures;
+    static std::vector<unsigned int> _vaos;
+    static std::vector<unsigned int> _vbos;
+    static std::vector<unsigned int> _textures;
 
-    unsigned int createVAO();
-    unsigned int createVBO();
-    void storeData(unsigned int attNum, vector<float> &data, unsigned int coordSize);
-    void unbindVAO();
-    void bindIndicesBuffer(vector<unsigned int> &indices);
+    static unsigned int createVAO();
+    static unsigned int createVBO();
+    static void storeData(unsigned int attNum, std::vector<float> &data, unsigned int coordSize);
+    static void unbindVAO();
+    static void bindIndicesBuffer(std::vector<unsigned int> &indices);
 };
 
 

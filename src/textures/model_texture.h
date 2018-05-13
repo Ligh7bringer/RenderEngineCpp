@@ -4,6 +4,7 @@
 
 class ModelTexture {
 public:
+    //very simple class, everything needed is the texture id
     explicit ModelTexture(unsigned int id) {
         _ID = id;
     }

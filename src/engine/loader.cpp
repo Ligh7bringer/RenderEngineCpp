@@ -7,9 +7,13 @@
 
 const std::string TEX_DIR = "res/textures/";
 
+std::vector<unsigned int> Loader::_vaos;
+std::vector<unsigned int> Loader::_vbos;
+std::vector<unsigned int> Loader::_textures;
+
 //creates a raw model with the passed vertices
 RawModel
-Loader::loadToVAO(vector<float> &positions, vector<unsigned int> &indices, vector<float> &texCoords) {
+Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &texCoords) {
     //create a vertex array
     unsigned int vaoID = createVAO();
     bindIndicesBuffer(indices);
@@ -47,7 +51,7 @@ void Loader::unbindVAO() {
     glBindVertexArray(0);
 }
 
-void Loader::storeData(unsigned int attNum, vector<float> &data, unsigned int coordSize) {
+void Loader::storeData(unsigned int attNum, std::vector<float> &data, unsigned int coordSize) {
     //create a vbo
     auto vboID = createVBO();
     //store it for later
@@ -74,35 +78,47 @@ void Loader::cleanUp() {
         glDeleteBuffers(1, &vbo);
     }
 
+    //delete textures
     for(auto tex : _textures) {
         glDeleteTextures(1, &tex);
     }
 }
 
-void Loader::bindIndicesBuffer(vector<unsigned int> &indices) {
+//use an EBO for more efficient rendering
+void Loader::bindIndicesBuffer(std::vector<unsigned int> &indices) {
     unsigned int vboID;
+    //create buffer
     glGenBuffers(1, &vboID);
+    //store it
     _vbos.push_back(vboID);
+    //bind it so it can be used
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID);
+    //NOTE: &indices.front() returns a pointer to the data stored in the vector, same as before
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices.front(), GL_STATIC_DRAW);
 }
 
+//loads a .PNG texture
 unsigned int Loader::loadTexture(const std::string &fileName) {
     int width, height, nrChannels;
     string loc = TEX_DIR + fileName + ".png";
-    unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, 4);
+    //load the texture with stbi
+    unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, 0);
     unsigned int texture;
+    //generate a texture and store its id
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
 
+    //if the image was loaded successfully
     if(data) {
+        //NOTE: GL_RGBA is the correct channel for images with an alpha channel
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        //i am not sure if this is necessary??
         glGenerateMipmap(GL_TEXTURE_2D);
-
     } else {
         LOG(ERROR) << "Texture " << loc << " couldn't be loaded!";
     }
 
+    //free image data as its not needed anymore
     stbi_image_free(data);
 
     return texture;

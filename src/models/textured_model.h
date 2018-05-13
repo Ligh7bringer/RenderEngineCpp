@@ -7,8 +7,10 @@
 
 class TexturedModel {
 public:
+    //simple constructor, store the raw model and texture
     explicit TexturedModel(const RawModel &model, const ModelTexture &tex) : _rawModel(model), _texture(tex) {}
 
+    //getters
     const RawModel &getModel() const {
         return _rawModel;
     }
