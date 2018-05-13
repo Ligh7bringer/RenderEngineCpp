@@ -8,8 +8,6 @@ private:
     unsigned int _vertexCount;
 
 public:
-    RawModel() = delete;
-
     //set the vao id and vertex count
     explicit RawModel(unsigned int id, unsigned int count) {
         _vaoID = id;

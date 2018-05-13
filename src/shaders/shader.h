@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader
 {
@@ -73,32 +75,54 @@ public:
         glDeleteShader(fragment);
     }
     // activate the shader
-    // ------------------------------------------------------------------------
     void use()
     {
         glUseProgram(ID);
     }
+
+    void stop() {
+        glUseProgram(0);
+    }
+
+    void cleanUp() {
+        glDeleteProgram(ID);
+    }
+
+    void bindAttribute(unsigned int attrib, const std::string& name) {
+        glBindAttribLocation(ID, attrib, name.c_str());
+    }
+
+    GLint getUniformLocation(const std::string& name) const {
+        return glGetUniformLocation(ID, name.c_str());
+    }
+
     // utility uniform functions
-    // ------------------------------------------------------------------------
     void setBool(const std::string &name, bool value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
-    // ------------------------------------------------------------------------
+
     void setInt(const std::string &name, int value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
-    // ------------------------------------------------------------------------
+
     void setFloat(const std::string &name, float value) const
     {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
+    void setVector3(const std::string& name, glm::vec3& value) {
+        glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+    }
+
+    void setMatrix(const std::string& name, glm::fmat4& mat) {
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+    }
+
 private:
     // utility function for checking shader compilation/linking errors.
-    // ------------------------------------------------------------------------
-    void checkCompileErrors(unsigned int shader, std::string type)
+    void checkCompileErrors(unsigned int shader, const std::string &type)
     {
         int success;
         char infoLog[1024];
@@ -108,7 +132,7 @@ private:
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-                std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                std::cout << "ERROR::SHADER_COMPILATION_ERROR: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
             }
         }
         else
@@ -117,7 +141,7 @@ private:
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
             }
         }
     }

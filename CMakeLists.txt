@@ -21,21 +21,30 @@ endif()
 
 #include dirs
 include_directories(src/
-        lib/glad/include/
-        lib/glfw/include/
-        lib/glm/
-        lib/stb/)
+                    src/engine/
+                    src/models/
+                    src/shaders/
+                    src/textures/
+                    src/toolbox/
+                    lib/glad/include/
+                    lib/glfw/include/
+                    lib/glm/
+                    lib/stb/)
 
 #sources
 file(GLOB VENDORS_SOURCES lib/glad/src/glad.c)
 file(GLOB PROJECT_HEADERS src/*.h
                           src/engine/*.h
                           src/models/*.h
-                          src/shaders/*.h )
+                          src/shaders/*.h
+                          src/textures/*.h
+                          toolbox/*.h)
 file(GLOB PROJECT_SOURCES src/*.cpp
                           src/engine/*.cpp
                           src/models/*.cpp
-                          src/shaders/*.cpp )
+                          src/shaders/*.cpp
+                          src/textures/*.cpp
+                          toolbox/*.cpp)
 file(GLOB PROJECT_SHADERS src/Shaders/*.comp
                           src/Shaders/*.frag
                           src/Shaders/*.geom

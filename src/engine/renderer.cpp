@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <models/textured_model.h>
 #include "renderer.h"
 
 void Renderer::prepare() {
@@ -8,15 +9,22 @@ void Renderer::prepare() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::render(RawModel model) {
-    //bind the model's vao
+void Renderer::render(const TexturedModel &texturedModel) {
+    RawModel model = texturedModel.getModel();
+    //bind the texturedModel's vao
     glBindVertexArray(model.get_vaoID());
     //activate the attribute list, 0 is the one used
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texturedModel.getTexture().getID());
+    glEnable(GL_TEXTURE_2D);
+
     //render
-    glDrawArrays(GL_TRIANGLES, 0, model.get_vertexCount());
+    glDrawElements(GL_TRIANGLES, model.get_vertexCount(), GL_UNSIGNED_INT, nullptr);
     //disable the attribute list
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     //unbind the vao
     glBindVertexArray(0);
 }
