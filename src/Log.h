@@ -6,6 +6,7 @@
 #define LOG_H
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ enum typelog {
     DEBUG,
     INFO,
     WARN,
-    ERROR
+    ERR
 };
 
 struct structlog {
@@ -55,7 +56,7 @@ private:
             case DEBUG: label = "DEBUG"; break;
             case INFO:  label = "INFO"; break;
             case WARN:  label = "WARN"; break;
-            case ERROR: label = "ERROR"; break;
+            case ERR: label = "ERROR"; break;
         }
         return label;
     }

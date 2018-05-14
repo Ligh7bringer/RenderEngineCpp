@@ -115,7 +115,7 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
         //i am not sure if this is necessary??
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
-        LOG(ERROR) << "Texture " << loc << " couldn't be loaded!";
+        LOG(ERR) << "Texture " << loc << " couldn't be loaded!";
     }
 
     //free image data as its not needed anymore

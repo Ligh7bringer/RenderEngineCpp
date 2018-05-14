@@ -15,6 +15,7 @@
 #include <textures/model_texture.h>
 #include <models/textured_model.h>
 #include <utilities/maths.h>
+#include <engine/obj_loader.h>
 
 structlog LOGCFG = {};
 
@@ -106,10 +107,10 @@ int main(int argc, char * argv[]) {
     };
 
     //create an entity
-    RawModel model = Loader::loadToVAO(vertices, indices, texCoords);
-    ModelTexture texture = ModelTexture(Loader::loadTexture("minecraft"));
+    RawModel model = OBJLoader::loadModel("dragon");
+    ModelTexture texture = ModelTexture(Loader::loadTexture("untextured"));
     TexturedModel texturedModel(model, texture);
-    Entity entity(texturedModel, glm::vec3(0.0f, 0.f, -5.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
+    Entity entity(texturedModel, glm::vec3(0.0f, -2.5f, -15.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
 
     Shader shader("res/shaders/basic.vert", "res/shaders/basic.frag");
     Renderer renderer = Renderer(shader);
@@ -119,7 +120,7 @@ int main(int argc, char * argv[]) {
     // Rendering Loop
     while (DisplayManager::shouldClose() == 0) {
         //rotate the entity
-        entity.rotate(1.f, 1.f, 0);
+        entity.rotate(0.f, 0.3f, 0);
         //handle keyboard input
         cam.move();
 

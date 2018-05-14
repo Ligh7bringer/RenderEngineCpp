@@ -20,7 +20,7 @@ void DisplayManager::createWindow(const glm::vec2 &size, const std::string &titl
 
     // Check for Valid Context
     if (_window == nullptr) {
-        LOG(ERROR) << "Failed to Create OpenGL Context";
+        LOG(ERR) << "Failed to Create OpenGL Context";
         return;
     }
 
@@ -28,6 +28,9 @@ void DisplayManager::createWindow(const glm::vec2 &size, const std::string &titl
     glfwMakeContextCurrent(_window);
     gladLoadGL();
     LOG(INFO) << "OpenGL " << glGetString(GL_VERSION);
+
+    //turn vsync off
+    glfwSwapInterval(0);
 }
 
 void DisplayManager::updateWindow() {
@@ -35,7 +38,7 @@ void DisplayManager::updateWindow() {
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, true);
 
-    //flip buffers
+    //swap buffers
     glfwSwapBuffers(_window);
     glfwPollEvents();
 }

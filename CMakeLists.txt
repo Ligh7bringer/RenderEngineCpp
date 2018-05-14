@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.9)
 #name of the project
 project(RenderEngine)
 
+#Main output directory
+SET(OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
+# Ouput all DLLs from all libs into main build folder
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
+
 #set up glfw
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
@@ -69,12 +74,12 @@ source_group("Vendors" FILES ${VENDORS_SOURCES})
 if(UNIX)
     message("Detected Linux! Copying resources to bin/build/...")
     add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${PROJECT_SOURCE_DIR}/res" ${CMAKE_BINARY_DIR}/${PROJECT_NAME}/res)
+            "${PROJECT_SOURCE_DIR}/res" ${CMAKE_BINARY_DIR}/bin/res)
 elseif(MSVC)
     message("Detected MSCV! Copying resources....")
     add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${PROJECT_SOURCE_DIR}/res" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/res)
-else()
+else() #this is probably the wrong destination dir
     message("Not Linux or MSVC! Copying resources...")
     add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${PROJECT_SOURCE_DIR}/res" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}/res)
@@ -89,7 +94,7 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
 #link libraries
 target_link_libraries(${PROJECT_NAME} glfw
         ${GLFW_LIBRARIES} ${GLAD_LIBRARIES})
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+#set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
+#make sure resources are copied every time the project is built
 add_dependencies(${PROJECT_NAME} copy_resources)
