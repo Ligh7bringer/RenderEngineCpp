@@ -4,10 +4,10 @@
 #include <iostream>
 #include "Log.h"
 
-GLFWwindow* DisplayManager::_window = nullptr;
-std::string DisplayManager::_title;
+GLFWwindow* WindowManager::_window = nullptr;
+std::string WindowManager::_title;
 
-void DisplayManager::createWindow(const glm::vec2 &size, const std::string &title) {
+void WindowManager::createWindow(const glm::vec2 &size, const std::string &title) {
     _title = title;
     // Load GLFW and Create a Window
     glfwInit();
@@ -33,7 +33,7 @@ void DisplayManager::createWindow(const glm::vec2 &size, const std::string &titl
     glfwSwapInterval(0);
 }
 
-void DisplayManager::updateWindow() {
+void WindowManager::updateWindow() {
     //if escape is pressed, close the window
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, true);
@@ -44,7 +44,7 @@ void DisplayManager::updateWindow() {
 }
 
 //close and destroy window
-void DisplayManager::closeWindow() {
+void WindowManager::closeWindow() {
     glfwSetWindowShouldClose(_window, true);
     glfwDestroyWindow(_window);
     _window = nullptr;
@@ -52,24 +52,24 @@ void DisplayManager::closeWindow() {
 }
 
 //returns a pointer to the window
-GLFWwindow *DisplayManager::getWindow() {
+GLFWwindow *WindowManager::getWindow() {
     return _window;
 }
 
 //returns whether the windows is closed
-int DisplayManager::shouldClose() {
+int WindowManager::shouldClose() {
     return glfwWindowShouldClose(_window);
 }
 
 //returns the size of the current window
-glm::vec2 DisplayManager::getWindowSize() {
+glm::vec2 WindowManager::getWindowSize() {
     int w, h;
     glfwGetWindowSize(_window, &w, &h);
     return glm::vec2(w, h);
 }
 
 //calculates and displays fps
-void DisplayManager::showUPS() {
+void WindowManager::showUPS() {
         // Static variables are only initialized once ever
         // Used for the size of the average array
         const static int SIZE = 500;

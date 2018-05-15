@@ -14,6 +14,8 @@ std::vector<float> OBJLoader::_normalsArray;
 std::vector<unsigned int> OBJLoader::_indices;
 
 RawModel OBJLoader::loadModel(const std::string &fileName) {
+    //std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
     _verticesArray.clear();
     _texsArray.clear();
     _normalsArray.clear();
@@ -79,7 +81,11 @@ RawModel OBJLoader::loadModel(const std::string &fileName) {
         _verticesArray.push_back(vertex.z);
     }
 
-    return Loader::loadToVAO(_verticesArray, _indices, _texsArray);
+//    std::chrono::high_resolution_clock::time_point t2 =  std::chrono::high_resolution_clock::now();
+//    std::chrono::duration<double> time_span =  std::chrono::duration_cast< std::chrono::duration<double>>(t2 - t1);
+//    LOG(INFO) << "Loading took " << time_span.count() << " seconds.";
+
+    return Loader::loadToVAO(_verticesArray, _indices, _normalsArray, _texsArray);
 }
 
 void OBJLoader::processVertex(const std::vector<std::string> &vertexData, std::vector<glm::vec2> &textures,
@@ -115,5 +121,3 @@ std::vector<std::string> OBJLoader::split(const string &phrase, const std::strin
 
     return list;
 }
-
-

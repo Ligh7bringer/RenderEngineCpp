@@ -5,7 +5,7 @@
 #include <glm/vec2.hpp>
 #include <string>
 
-class DisplayManager {
+class WindowManager {
 public:
     static void createWindow(const glm::vec2 &size, const std::string &title);
     static void updateWindow();

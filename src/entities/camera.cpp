@@ -7,16 +7,16 @@ const float SPEED = 0.02f;
 
 //handle keyboard input and change the camera's position accordingly
 void Camera::move() {
-    if(glfwGetKey(DisplayManager::getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
+    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
         _position.z -= SPEED;
     }
-    if(glfwGetKey(DisplayManager::getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
+    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
         _position.x += SPEED;
     }
-    if(glfwGetKey(DisplayManager::getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
+    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
         _position.x -= SPEED;
     }
-    if(glfwGetKey(DisplayManager::getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
+    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
         _position.z += SPEED;
     }
 }

@@ -1,9 +1,10 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
+
 #include <entities/entity.h>
 #include <shaders/shader.h>
 #include <utilities/maths.h>
-#include <GLFW/glfw3.h>
 #include "renderer.h"
 #include "window_manager.h"
 
@@ -28,13 +29,19 @@ void Renderer::render(const Entity &entity, const Shader &shader) {
     RawModel rawModel = model.getModel();
     //bind the texturedModel's vao
     glBindVertexArray(rawModel.get_vaoID());
-    //activate the attribute list, 0 is the one used
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    //activate the attribute list
+    glEnableVertexAttribArray(0); //indices
+    glEnableVertexAttribArray(1); //texture coordinates
+    glEnableVertexAttribArray(2); //normals
 
     //calculate the transformation matrix using the model's position, rotation and scale
     glm::mat4 transformationMat = Maths::createTransformationMatrix(entity.getPosition(), entity.getRotation(), entity.getScale());
     shader.setMatrix("transformationMatrix", transformationMat);
+
+    //set the lighting uniforms in the shaders
+    auto tex = model.getTexture();
+    shader.setFloat("shineDamper", tex.getShineDamper());
+    shader.setFloat("reflectivity", tex.getReflectivity());
 
     //set the active texture
     glActiveTexture(GL_TEXTURE0);
@@ -45,9 +52,12 @@ void Renderer::render(const Entity &entity, const Shader &shader) {
 
     //render
     glDrawElements(GL_TRIANGLES, rawModel.get_vertexCount(), GL_UNSIGNED_INT, nullptr);
+
     //disable the attribute lists
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+
     //unbind the vao
     glBindVertexArray(0);
 }
@@ -55,7 +65,7 @@ void Renderer::render(const Entity &entity, const Shader &shader) {
 //creates the projection matrix
 void Renderer::createProjectionMatrix() {
     //get window size
-    auto winSize = DisplayManager::getWindowSize();
+    auto winSize = WindowManager::getWindowSize();
     //calculate the matrix using the very convenient glm method
     _projectionMatrix = glm::perspectiveFov(glm::radians(FOV), winSize.x, winSize.y, NEAR_PLANE, FAR_PLANE);
 }

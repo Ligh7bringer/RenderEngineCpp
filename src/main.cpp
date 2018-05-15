@@ -10,16 +10,15 @@
 #include <glm/glm.hpp>
 
 // Standard Headers
-#include <cstdio>
-#include <cstdlib>
 #include <textures/model_texture.h>
 #include <models/textured_model.h>
 #include <utilities/maths.h>
 #include <engine/obj_loader.h>
+#include <entities/light.h>
 
 structlog LOGCFG = {};
 
-int main(int argc, char * argv[]) {
+int main() {
     //set up logging:
     //display logging level
     LOGCFG.headers = true;
@@ -27,90 +26,23 @@ int main(int argc, char * argv[]) {
     LOGCFG.level = DEBUG;
 
     //create a window
-    DisplayManager::createWindow(glm::vec2(1280, 720), "Render Engine");
-
-
-    //cube vertices, indices and texture coordinates
-    std::vector<float> vertices = {
-            -0.5f,0.5f,-0.5f,
-            -0.5f,-0.5f,-0.5f,
-            0.5f,-0.5f,-0.5f,
-            0.5f,0.5f,-0.5f,
-
-            -0.5f,0.5f,0.5f,
-            -0.5f,-0.5f,0.5f,
-            0.5f,-0.5f,0.5f,
-            0.5f,0.5f,0.5f,
-
-            0.5f,0.5f,-0.5f,
-            0.5f,-0.5f,-0.5f,
-            0.5f,-0.5f,0.5f,
-            0.5f,0.5f,0.5f,
-
-            -0.5f,0.5f,-0.5f,
-            -0.5f,-0.5f,-0.5f,
-            -0.5f,-0.5f,0.5f,
-            -0.5f,0.5f,0.5f,
-
-            -0.5f,0.5f,0.5f,
-            -0.5f,0.5f,-0.5f,
-            0.5f,0.5f,-0.5f,
-            0.5f,0.5f,0.5f,
-
-            -0.5f,-0.5f,0.5f,
-            -0.5f,-0.5f,-0.5f,
-            0.5f,-0.5f,-0.5f,
-            0.5f,-0.5f,0.5f
-    };
-
-    std::vector<unsigned int> indices {
-            0,1,3,
-            3,1,2,
-            4,5,7,
-            7,5,6,
-            8,9,11,
-            11,9,10,
-            12,13,15,
-            15,13,14,
-            16,17,19,
-            19,17,18,
-            20,21,23,
-            23,21,22
-
-    };
-
-    std::vector<float> texCoords {
-            0,0,
-            0,1,
-            1,1,
-            1,0,
-            0,0,
-            0,1,
-            1,1,
-            1,0,
-            0,0,
-            0,1,
-            1,1,
-            1,0,
-            0,0,
-            0,1,
-            1,1,
-            1,0,
-            0,0,
-            0,1,
-            1,1,
-            1,0,
-            0,0,
-            0,1,
-            1,1,
-            1,0
-    };
+    WindowManager::createWindow(glm::vec2(1280, 720), "Render Engine");
 
     //create an entity
     RawModel model = OBJLoader::loadModel("dragon");
     ModelTexture texture = ModelTexture(Loader::loadTexture("untextured"));
+    texture.setShineDamper(10.f);
+    texture.setReflectivity(1.f);
     TexturedModel texturedModel(model, texture);
-    Entity entity(texturedModel, glm::vec3(0.0f, -2.5f, -15.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
+    Entity entity(texturedModel, glm::vec3(0.0f, -2.5f, -25.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
+    Light light = Light(glm::vec3(0.f, 0.f, -20.f), glm::vec3(1.f, 1.f, 1.f));
+
+    RawModel rawStall = OBJLoader::loadModel("stall");
+    ModelTexture stallTex = ModelTexture(Loader::loadTexture("stallTexture"));
+    stallTex.setShineDamper(10.f);
+    stallTex.setReflectivity(0.2f);
+    TexturedModel texturedStall(rawStall, stallTex);
+    Entity stall(texturedStall, glm::vec3(-13.0f, -2.5f, -25.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
 
     Shader shader("res/shaders/basic.vert", "res/shaders/basic.frag");
     Renderer renderer = Renderer(shader);
@@ -118,9 +50,10 @@ int main(int argc, char * argv[]) {
     Camera cam = Camera();
 
     // Rendering Loop
-    while (DisplayManager::shouldClose() == 0) {
+    while (WindowManager::shouldClose() == 0) {
         //rotate the entity
         entity.rotate(0.f, 0.3f, 0);
+        stall.rotate(0.f, 0.3f, 0);
         //handle keyboard input
         cam.move();
 
@@ -128,18 +61,22 @@ int main(int argc, char * argv[]) {
         renderer.prepare();
 
         shader.use();
+        //set lighting uniforms
+        shader.setVector3("lightPosition", light.getPosition());
+        shader.setVector3("lightColour", light.getColour());
         //set the uniform variable in the shader
         shader.setMatrix("viewMatrix", Maths::createViewMatrix(cam));
         renderer.render(entity, shader);
+        renderer.render(stall, shader);
         shader.stop();
 
-        DisplayManager::updateWindow();
-        DisplayManager::showUPS();
+        WindowManager::updateWindow();
+        WindowManager::showUPS();
     }
 
     Loader::cleanUp();
     shader.cleanUp();
-    DisplayManager::closeWindow();
+    WindowManager::closeWindow();
 
     return EXIT_SUCCESS;
 }

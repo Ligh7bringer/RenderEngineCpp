@@ -6,7 +6,8 @@
 
 class Loader {
 public:
-    static RawModel loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &texCoords);
+    static RawModel loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &normals,
+                                  std::vector<float> &texCoords);
     static void cleanUp();
     static unsigned int loadTexture(const std::string &fileName);
 

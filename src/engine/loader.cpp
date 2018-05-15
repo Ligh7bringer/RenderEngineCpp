@@ -13,13 +13,15 @@ std::vector<unsigned int> Loader::_textures;
 
 //creates a raw model with the passed vertices
 RawModel
-Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &texCoords) {
+Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &normals,
+                  std::vector<float> &texCoords) {
     //create a vertex array
     unsigned int vaoID = createVAO();
     bindIndicesBuffer(indices);
     //store the data, starting from index 0
     storeData(0, positions, 3);
     storeData(1, texCoords, 2);
+    storeData(2, normals, 3);
     unbindVAO();
 
     //create and return the model
