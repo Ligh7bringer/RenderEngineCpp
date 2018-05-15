@@ -19,7 +19,6 @@ public:
 protected:
     static GLFWwindow* _window;
     static std::string _title;
-
 };
 
 

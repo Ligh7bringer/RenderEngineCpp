@@ -12,15 +12,12 @@
 class Renderer {
 public:
     //Renderer(Shader &shader);
-    static void initialise(Shader& shader);
-    static void prepare();
+    static void initialise(Shader &shader, const glm::mat4 &projMat);
     static void render(const std::map<TexturedModel, std::vector<Entity>>& entities);
 
 private:
-    static glm::mat4 _projectionMatrix;
     static Shader _shader;
 
-    static void createProjectionMatrix();
     static void prepareTexturedModel(const TexturedModel& model);
     static void unbindTexturedModel();
     static void prepareInstance(const Entity& entity);

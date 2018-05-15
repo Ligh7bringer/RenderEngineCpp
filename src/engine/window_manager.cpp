@@ -30,14 +30,14 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     LOG(INFO) << "OpenGL " << glGetString(GL_VERSION);
 
     //turn vsync off
-    //glfwSwapInterval(0);
+    glfwSwapInterval(0);
 }
 
 void WindowManager::updateWindow() {
     //if escape is pressed, close the window
     if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(_window, true);
-
+    
     //swap buffers
     glfwSwapBuffers(_window);
     glfwPollEvents();

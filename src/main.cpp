@@ -17,6 +17,10 @@
 
 structlog LOGCFG = {};
 
+float randCoord(int min = -800, int max = 800) {
+    return min + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(max-min)));
+}
+
 int main() {
     //set up logging:
     //display logging level
@@ -27,25 +31,27 @@ int main() {
     //create a window
     WindowManager::createWindow(glm::vec2(1280, 720), "Render Engine");
 
-    //create an entity
-    RawModel model = OBJLoader::loadModel("cube");
-    ModelTexture texture = ModelTexture(Loader::loadTexture("minecraft"));
-    texture.setShineDamper(10.f);
-    texture.setReflectivity(1.f);
-    TexturedModel texturedModel(model, texture);
-    //Entity entity(texturedModel, glm::vec3(0.f, 0.f, 20.f), glm::vec3(0.f, 0.f, 0.f), 3.f);
+    TexturedModel tree = TexturedModel(OBJLoader::loadModel("tree"), ModelTexture(Loader::loadTexture("tree")));
+    TexturedModel grass = TexturedModel(OBJLoader::loadModel("grassModel"), ModelTexture(Loader::loadTexture("grassTexture"), true, true));
+    TexturedModel fern = TexturedModel(OBJLoader::loadModel("fern"), ModelTexture(Loader::loadTexture("fern"), true, true));
 
-    std::vector<std::shared_ptr<Entity>> cubes;
-    for(int i = 0; i < 1500; ++i) {
-        auto x = -50.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(50-(-50))));
-        auto y = -50.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(50-(-50))));
-        auto z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/300));
-        auto ent = std::make_shared<Entity>(texturedModel, glm::vec3(x, y, -z), glm::vec3(static_cast<float>(rand() * 180), static_cast<float>(rand() * 180), 0.f), 3.f);
-        cubes.push_back(ent);
+    std::vector<Entity> entities;
+    for(int i = 0; i < 650; ++i) {
+        auto ent = Entity(tree, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, static_cast<float>(rand() * 180), 0.f), 3.f);
+        auto ent2 = Entity(grass, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, static_cast<float>(rand() * 180), 0.f), 1.f);
+        auto ent3 = Entity(fern, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, static_cast<float>(rand() * 180), 0.f), 0.5f);
+        entities.push_back(ent);
+        entities.push_back(ent2);
+        entities.push_back(ent3);
     }
 
+    //terrains
+    auto terrainTex = ModelTexture(Loader::loadTexture("grass"));
+    Terrain terrain = Terrain(0, -800, terrainTex);
+    Terrain terrain2 = Terrain(-800, -800, terrainTex);
+
     Camera cam = Camera();
-    Light light = Light(glm::vec3(0.f, 0.f, -20.f), glm::vec3(1.f, 1.f, 1.f));
+    Light light = Light(glm::vec3(0.f, 2000.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
 
     MasterRenderer::initialise();
 
@@ -54,10 +60,13 @@ int main() {
         //handle keyboard input
         cam.move();
 
-        for(const auto& cube : cubes) {
+        for(const auto& cube : entities) {
             //process entities
-            MasterRenderer::processEntity(*cube);
+            MasterRenderer::processEntity(cube);
         }
+
+        MasterRenderer::processTerrain(terrain);
+        MasterRenderer::processTerrain(terrain2);
 
         //render entities
         MasterRenderer::render(light, cam);

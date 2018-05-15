@@ -14,23 +14,16 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
 
-uniform float useFakeLighting;
-
 void main() {
     //calculate world position
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
     //set gl_Position to the correct value
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
     //pass texture coordinates to fragment shader
-    pass_texCoords = texCoords;
-
-    vec3 actualNormal = normal;
-    if(useFakeLighting > 0.5) {
-        actualNormal = vec3(0.0, 1.0, 0.0);
-    }
+    pass_texCoords = texCoords * 40.0;
 
     //pass the surface normal, multiplied by transormation matrix so that any translations and rotations are taken into account
-    surfaceNormal = (transformationMatrix * vec4(actualNormal, 0.0)).xyz;
+    surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
     //calculate the vector pointing to the light source
     toLightVector = lightPosition - worldPosition.xyz;
 

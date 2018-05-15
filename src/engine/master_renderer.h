@@ -9,17 +9,26 @@
 
 #include <map>
 #include <vector>
+#include <terrains/terrain.h>
 
 class MasterRenderer {
 public:
+    static void prepare();
     static void initialise();
     static void cleanUp();
     static void render(Light& light, Camera& camera);
     static void processEntity(const Entity& entity);
+    static void processTerrain(const Terrain& terrain);
+    static void createProjectionMatrix();
+    static void enableCulling();
+    static void disableCulling();
 
 private:
+    static glm::mat4 _projectionMatrix;
+    static Shader _shader, _terrainShader;
+
     static std::map<TexturedModel, std::vector<Entity>> _entities;
-    static Shader _shader;
+    static std::vector<Terrain> _terrains;
 };
 
 

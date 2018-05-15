@@ -2,6 +2,7 @@
 #define RENDERENGINE_LOADER_H
 
 #include <vector>
+#include <string>
 #include "models/raw_model.h"
 
 class Loader {

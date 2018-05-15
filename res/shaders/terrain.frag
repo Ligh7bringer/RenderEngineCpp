@@ -40,12 +40,6 @@ void main() {
     //the final specular colour is everything multiplied together
     vec3 finalSpecular = dampedFactor * reflectivity * lightColour;
 
-    //handle transparent textures
-    vec4 texColour = texture(texSampler, pass_texCoords);
-    if(texColour.a < 0.5) {
-        discard;
-    }
-
     //calculate the colour of the pixel
-    out_Colour = vec4(diffuse, 1.0) * texColour + vec4(finalSpecular, 1.0);
+    out_Colour = vec4(diffuse, 1.0) * texture(texSampler, pass_texCoords) + vec4(finalSpecular, 1.0);
 }

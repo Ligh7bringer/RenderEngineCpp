@@ -32,6 +32,7 @@ include_directories(src/
                     src/textures/
                     src/utilities/
                     src/entities/
+                    src/terrains/
                     lib/glad/include/
                     lib/glfw/include/
                     lib/glm/
@@ -45,14 +46,16 @@ file(GLOB PROJECT_HEADERS   src/*.h
                             src/shaders/*.h
                             src/textures/*.h
                             src/utilities/*.h
-                            src/entities/*.h)
+                            src/entities/*.h
+                            src/terrains/*.h)
 file(GLOB PROJECT_SOURCES   src/*.cpp
                             src/engine/*.cpp
                             src/models/*.cpp
                             src/shaders/*.cpp
                             src/textures/*.cpp
                             src/utilities/*.cpp
-                            src/entities/*.cpp)
+                            src/entities/*.cpp
+                            src/terrains/*.cpp)
 file(GLOB PROJECT_SHADERS   src/Shaders/*.comp
                             src/Shaders/*.frag
                             src/Shaders/*.geom
