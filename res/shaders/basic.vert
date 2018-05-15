@@ -15,12 +15,18 @@ uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
 
 void main() {
+    //calculate world position
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+    //set gl_Position to the correct value
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
+    //pass texture coordinates to fragment shader
     pass_texCoords = texCoords;
 
+    //pass the surface normal, multiplied by transormation matrix so that any translations and rotations are taken into account
     surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+    //calculate the vector pointing to the light source
     toLightVector = lightPosition - worldPosition.xyz;
 
+    //calculate the vector pointing to the camera
     toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 }

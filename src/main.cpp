@@ -2,19 +2,18 @@
 #include "engine/window_manager.h"
 #include "Log.h"
 #include "engine/loader.h"
-#include "engine/renderer.h"
-#include "shaders/shader.h"
-
-// System Headers
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-
-// Standard Headers
 #include <textures/model_texture.h>
 #include <models/textured_model.h>
 #include <utilities/maths.h>
 #include <engine/obj_loader.h>
 #include <entities/light.h>
+#include <engine/master_renderer.h>
+
+// System Headers
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <memory>
+
 
 structlog LOGCFG = {};
 
@@ -29,53 +28,48 @@ int main() {
     WindowManager::createWindow(glm::vec2(1280, 720), "Render Engine");
 
     //create an entity
-    RawModel model = OBJLoader::loadModel("dragon");
-    ModelTexture texture = ModelTexture(Loader::loadTexture("untextured"));
+    RawModel model = OBJLoader::loadModel("cube");
+    ModelTexture texture = ModelTexture(Loader::loadTexture("minecraft"));
     texture.setShineDamper(10.f);
     texture.setReflectivity(1.f);
     TexturedModel texturedModel(model, texture);
-    Entity entity(texturedModel, glm::vec3(0.0f, -2.5f, -25.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
-    Light light = Light(glm::vec3(0.f, 0.f, -20.f), glm::vec3(1.f, 1.f, 1.f));
+    //Entity entity(texturedModel, glm::vec3(0.f, 0.f, 20.f), glm::vec3(0.f, 0.f, 0.f), 3.f);
 
-    RawModel rawStall = OBJLoader::loadModel("stall");
-    ModelTexture stallTex = ModelTexture(Loader::loadTexture("stallTexture"));
-    stallTex.setShineDamper(10.f);
-    stallTex.setReflectivity(0.2f);
-    TexturedModel texturedStall(rawStall, stallTex);
-    Entity stall(texturedStall, glm::vec3(-13.0f, -2.5f, -25.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
-
-    Shader shader("res/shaders/basic.vert", "res/shaders/basic.frag");
-    Renderer renderer = Renderer(shader);
+    std::vector<std::shared_ptr<Entity>> cubes;
+    for(int i = 0; i < 1500; ++i) {
+        auto x = -50.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(50-(-50))));
+        auto y = -50.f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(50-(-50))));
+        auto z = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/300));
+        auto ent = std::make_shared<Entity>(texturedModel, glm::vec3(x, y, -z), glm::vec3(static_cast<float>(rand() * 180), static_cast<float>(rand() * 180), 0.f), 3.f);
+        cubes.push_back(ent);
+    }
 
     Camera cam = Camera();
+    Light light = Light(glm::vec3(0.f, 0.f, -20.f), glm::vec3(1.f, 1.f, 1.f));
+
+    MasterRenderer::initialise();
 
     // Rendering Loop
     while (WindowManager::shouldClose() == 0) {
-        //rotate the entity
-        entity.rotate(0.f, 0.3f, 0);
-        stall.rotate(0.f, 0.3f, 0);
         //handle keyboard input
         cam.move();
 
-        //clear buffers
-        renderer.prepare();
+        for(const auto& cube : cubes) {
+            //process entities
+            MasterRenderer::processEntity(*cube);
+        }
 
-        shader.use();
-        //set lighting uniforms
-        shader.setVector3("lightPosition", light.getPosition());
-        shader.setVector3("lightColour", light.getColour());
-        //set the uniform variable in the shader
-        shader.setMatrix("viewMatrix", Maths::createViewMatrix(cam));
-        renderer.render(entity, shader);
-        renderer.render(stall, shader);
-        shader.stop();
+        //render entities
+        MasterRenderer::render(light, cam);
 
+        //update window
         WindowManager::updateWindow();
+        //show fps
         WindowManager::showUPS();
     }
 
+    MasterRenderer::cleanUp();
     Loader::cleanUp();
-    shader.cleanUp();
     WindowManager::closeWindow();
 
     return EXIT_SUCCESS;

@@ -6,16 +6,25 @@
 #include <shaders/shader.h>
 #include "models/raw_model.h"
 
+#include <map>
+#include <vector>
+
 class Renderer {
 public:
-    Renderer(Shader &shader);
-    void prepare();
-    void render(const Entity &entity, const Shader &shader);
+    //Renderer(Shader &shader);
+    static void initialise(Shader& shader);
+    static void prepare();
+    static void render(const std::map<TexturedModel, std::vector<Entity>>& entities);
 
 private:
-    glm::mat4 _projectionMatrix;
+    static glm::mat4 _projectionMatrix;
+    static Shader _shader;
 
-    void createProjectionMatrix();
+    static void createProjectionMatrix();
+    static void prepareTexturedModel(const TexturedModel& model);
+    static void unbindTexturedModel();
+    static void prepareInstance(const Entity& entity);
+
 };
 
 

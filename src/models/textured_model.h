@@ -19,6 +19,11 @@ public:
         return _texture;
     }
 
+    bool operator <( const TexturedModel &rhs ) const
+    {
+        return ( _texture.getID() < rhs.getTexture().getID() );
+    }
+
 private:
     RawModel _rawModel;
     ModelTexture _texture;

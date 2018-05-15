@@ -3,7 +3,7 @@
 #include "camera.h"
 
 //the movement speed of the camera
-const float SPEED = 0.02f;
+const float SPEED = 0.3f;
 
 //handle keyboard input and change the camera's position accordingly
 void Camera::move() {

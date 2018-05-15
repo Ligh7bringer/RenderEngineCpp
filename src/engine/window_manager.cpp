@@ -30,7 +30,7 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     LOG(INFO) << "OpenGL " << glGetString(GL_VERSION);
 
     //turn vsync off
-    glfwSwapInterval(0);
+    //glfwSwapInterval(0);
 }
 
 void WindowManager::updateWindow() {
