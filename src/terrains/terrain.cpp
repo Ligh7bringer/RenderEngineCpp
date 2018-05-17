@@ -3,7 +3,8 @@
 
 #include <vector>
 
-Terrain::Terrain(int gridX, int gridZ, const ModelTexture &tex) : _texture(tex), _model(generateTerrain()) {
+Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack& pack, const TerrainTexture& blendMap) : _texturePack(pack), _blendMap(blendMap),
+                                                                                                           _model(generateTerrain()) {
     _x = gridX;
     _z = gridZ;
 }
@@ -70,14 +71,11 @@ const RawModel &Terrain::get_model() const {
     return _model;
 }
 
-void Terrain::set_model(const RawModel &_model) {
-    Terrain::_model = _model;
+const TerrainTexturePack &Terrain::get_texturePack() const {
+    return _texturePack;
 }
 
-const ModelTexture &Terrain::get_texture() const {
-    return _texture;
+const TerrainTexture &Terrain::get_blendMap() const {
+    return _blendMap;
 }
 
-void Terrain::set_texture(const ModelTexture &_texture) {
-    Terrain::_texture = _texture;
-}

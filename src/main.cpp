@@ -14,7 +14,6 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-
 structlog LOGCFG = {};
 
 float randCoord(int min = -800, int max = 800) {
@@ -31,24 +30,33 @@ int main() {
     //create a window
     WindowManager::createWindow(glm::vec2(1280, 720), "Render Engine");
 
-    TexturedModel tree = TexturedModel(OBJLoader::loadModel("tree"), ModelTexture(Loader::loadTexture("tree")));
-    TexturedModel grass = TexturedModel(OBJLoader::loadModel("grassModel"), ModelTexture(Loader::loadTexture("grassTexture"), true, true));
-    TexturedModel fern = TexturedModel(OBJLoader::loadModel("fern"), ModelTexture(Loader::loadTexture("fern"), true, true));
+    TexturedModel tree = TexturedModel(OBJLoader::load("tree"), ModelTexture(Loader::loadTexture("tree")));
+    TexturedModel grass = TexturedModel(OBJLoader::load("grassModel"), ModelTexture(Loader::loadTexture("grassTexture"), true, true));
+    TexturedModel fern = TexturedModel(OBJLoader::load("fern"), ModelTexture(Loader::loadTexture("fern"), true, true));
 
     std::vector<Entity> entities;
-    for(int i = 0; i < 650; ++i) {
+    for(int i = 0; i < 500; ++i) {
         auto ent = Entity(tree, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, static_cast<float>(rand() * 180), 0.f), 3.f);
         auto ent2 = Entity(grass, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, static_cast<float>(rand() * 180), 0.f), 1.f);
         auto ent3 = Entity(fern, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, static_cast<float>(rand() * 180), 0.f), 0.5f);
+
         entities.push_back(ent);
         entities.push_back(ent2);
         entities.push_back(ent3);
     }
 
-    //terrains
-    auto terrainTex = ModelTexture(Loader::loadTexture("grass"));
-    Terrain terrain = Terrain(0, -800, terrainTex);
-    Terrain terrain2 = Terrain(-800, -800, terrainTex);
+    //terrains ----------------------------------------------------------------
+    /* textures */
+    TerrainTexture bgTex = TerrainTexture(Loader::loadTexture("grass"));
+    TerrainTexture rTex = TerrainTexture(Loader::loadTexture("mud"));
+    TerrainTexture gTex = TerrainTexture(Loader::loadTexture("grassFlowers"));
+    TerrainTexture bTex = TerrainTexture(Loader::loadTexture("path"));
+    TerrainTexture blendMap = TerrainTexture(Loader::loadTexture("blendMap2"));
+    TerrainTexturePack pack = TerrainTexturePack(bgTex, rTex, gTex, bTex);
+    /*---------------------------------------------------*/
+    Terrain terrain = Terrain(0, -800, pack, blendMap);
+    Terrain terrain2 = Terrain(-800, -800, pack, blendMap);
+    //-------------------------------------------------------------------------
 
     Camera cam = Camera();
     Light light = Light(glm::vec3(0.f, 2000.f, 0.f), glm::vec3(1.f, 1.f, 1.f));

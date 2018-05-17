@@ -4,15 +4,35 @@ in vec2 pass_texCoords;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
 in vec3 toCameraVector;
+in float visibility;
 
 out vec4 out_Colour;
 
-uniform sampler2D texSampler;
+uniform sampler2D backgroundTexture;
+uniform sampler2D rTexture;
+uniform sampler2D gTexture;
+uniform sampler2D bTexture;
+uniform sampler2D blendMap;
+
 uniform vec3 lightColour;
 uniform float shineDamper;
 uniform float reflectivity;
+uniform vec3 skyColour;
 
 void main() {
+    //get colour of blend map to find out how much of each texture should be rendered
+    vec4 blendMapColour = texture(blendMap, pass_texCoords);
+    //amount of background texture
+    float backTextureAmount = 1 - (blendMapColour.r + blendMapColour.g + blendMapColour.b);
+    //repeat texture
+    vec2 tiledCoords = pass_texCoords * 40.0;
+    //calculate colours of each texture
+    vec4 backgroundTextureCol = texture(backgroundTexture, tiledCoords) * backTextureAmount;
+    vec4 rTextureCol = texture(rTexture, tiledCoords) * blendMapColour.r; //this texture amount depends on how much red there is in the blendmap texture
+    vec4 gTextureCol = texture(gTexture, tiledCoords) * blendMapColour.g; //same but green
+    vec4 bTextureCol = texture(bTexture, tiledCoords) * blendMapColour.b; //same but blue
+    vec4 totalCol = backgroundTextureCol + rTextureCol + gTextureCol + bTextureCol;
+
     //normalise normal and toLight vector
     vec3 unitNormal = normalize(surfaceNormal);
     vec3 unitLightVector = normalize(toLightVector);
@@ -41,5 +61,6 @@ void main() {
     vec3 finalSpecular = dampedFactor * reflectivity * lightColour;
 
     //calculate the colour of the pixel
-    out_Colour = vec4(diffuse, 1.0) * texture(texSampler, pass_texCoords) + vec4(finalSpecular, 1.0);
+    out_Colour = vec4(diffuse, 1.0) * totalCol + vec4(finalSpecular, 1.0);
+    out_Colour = mix(vec4(skyColour, 1.0), out_Colour, visibility);
 }

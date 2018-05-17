@@ -4,6 +4,7 @@ in vec2 pass_texCoords;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
 in vec3 toCameraVector;
+in float visibility;
 
 out vec4 out_Colour;
 
@@ -11,6 +12,7 @@ uniform sampler2D texSampler;
 uniform vec3 lightColour;
 uniform float shineDamper;
 uniform float reflectivity;
+uniform vec3 skyColour;
 
 void main() {
     //normalise normal and toLight vector
@@ -48,4 +50,5 @@ void main() {
 
     //calculate the colour of the pixel
     out_Colour = vec4(diffuse, 1.0) * texColour + vec4(finalSpecular, 1.0);
+    out_Colour = mix(vec4(skyColour, 1.0), out_Colour, visibility);
 }

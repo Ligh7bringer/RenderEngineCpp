@@ -26,6 +26,7 @@ public:
 private:
     static glm::mat4 _projectionMatrix;
     static Shader _shader, _terrainShader;
+    static glm::vec3 _skyColour;
 
     static std::map<TexturedModel, std::vector<Entity>> _entities;
     static std::vector<Terrain> _terrains;

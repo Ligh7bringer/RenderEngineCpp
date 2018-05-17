@@ -3,17 +3,12 @@
 
 #include <models/raw_model.h>
 #include <textures/model_texture.h>
+#include <textures/terrain_texture_pack.h>
 
 class Terrain {
 public:
-    Terrain(int gridX, int gridZ, const ModelTexture& tex);
+    Terrain(int gridX, int gridZ, const TerrainTexturePack& pack, const TerrainTexture& blendMap);
 
-private:
-    const float SIZE = 800;
-    const unsigned int VERTEX_COUNT = 128;
-
-    float _x, _z;
-public:
     float get_x() const;
 
     void set_x(float _x);
@@ -24,15 +19,19 @@ public:
 
     const RawModel &get_model() const;
 
-    void set_model(const RawModel &_model);
+    const TerrainTexturePack &get_texturePack() const;
 
-    const ModelTexture &get_texture() const;
-
-    void set_texture(const ModelTexture &_texture);
+    const TerrainTexture &get_blendMap() const;
 
 private:
+    const float SIZE = 800;
+    const unsigned int VERTEX_COUNT = 128;
+
+    float _x, _z;
+
     RawModel _model;
-    ModelTexture _texture;
+    TerrainTexturePack _texturePack;
+    TerrainTexture _blendMap;
 
     RawModel generateTerrain();
 

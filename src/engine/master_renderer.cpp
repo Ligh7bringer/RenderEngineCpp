@@ -14,6 +14,8 @@ Shader MasterRenderer::_terrainShader;
 std::vector<Terrain> MasterRenderer::_terrains;
 std::map<TexturedModel, std::vector<Entity>> MasterRenderer::_entities;
 
+glm::vec3 MasterRenderer::_skyColour = glm::vec3(0.5f, 0.5f, 0.5f);
+
 //some constants needed for the projection matrix
 const float FOV = 70.f;
 const float NEAR_PLANE = 0.1f;
@@ -35,7 +37,7 @@ void MasterRenderer::prepare() {
     //clear colour buffer and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //set background colour
-    glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+    glClearColor(_skyColour.x, _skyColour.y, _skyColour.z, 1.0f);
 }
 
 void MasterRenderer::cleanUp() {
@@ -47,6 +49,7 @@ void MasterRenderer::render(Light &light, Camera &camera) {
     prepare();
 
     _shader.use();
+    _shader.setVector3("skyColour", _skyColour);
     _shader.setVector3("lightPosition", light.getPosition());
     _shader.setVector3("lightColour", light.getColour());
     _shader.setMatrix("viewMatrix", Maths::createViewMatrix(camera));
@@ -54,6 +57,7 @@ void MasterRenderer::render(Light &light, Camera &camera) {
     _shader.stop();
 
     _terrainShader.use();
+    _terrainShader.setVector3("skyColour", _skyColour);
     _terrainShader.setVector3("lightPosition", light.getPosition());
     _terrainShader.setVector3("lightColour", light.getColour());
     _terrainShader.setMatrix("viewMatrix", Maths::createViewMatrix(camera));

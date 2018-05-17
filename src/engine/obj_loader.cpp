@@ -6,6 +6,10 @@
 #include <fstream>
 #include <iterator>
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
+
 const std::string MODEL_DIR = "res/models/";
 
 std::vector<float> OBJLoader::_verticesArray;
@@ -13,6 +17,7 @@ std::vector<float> OBJLoader::_texsArray;
 std::vector<float> OBJLoader::_normalsArray;
 std::vector<unsigned int> OBJLoader::_indices;
 
+//old stuff, much slower than using tiny obj
 RawModel OBJLoader::loadModel(const std::string &fileName) {
     //std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
@@ -80,16 +85,16 @@ RawModel OBJLoader::loadModel(const std::string &fileName) {
         _verticesArray.push_back(vertex.y);
         _verticesArray.push_back(vertex.z);
     }
-
+//
 //    std::chrono::high_resolution_clock::time_point t2 =  std::chrono::high_resolution_clock::now();
 //    std::chrono::duration<double> time_span =  std::chrono::duration_cast< std::chrono::duration<double>>(t2 - t1);
-//    LOG(INFO) << "Loading took " << time_span.count() << " seconds.";
+//    LOG(INFO) << "Loading " << loc << " took " << time_span.count() << " seconds.";
 
     return Loader::loadToVAO(_verticesArray, _indices, _normalsArray, _texsArray);
 }
 
 void OBJLoader::processVertex(const std::vector<std::string> &vertexData, std::vector<glm::vec2> &textures,
-                             std::vector<glm::vec3> &normals) {
+                              std::vector<glm::vec3> &normals) {
     int current_vertex_pointer = std::stoi(vertexData.at(0)) - 1;
     _indices.emplace_back(current_vertex_pointer);
 
@@ -120,4 +125,49 @@ std::vector<std::string> OBJLoader::split(const string &phrase, const std::strin
     list.push_back(s);
 
     return list;
+}
+
+//faster obj loading using tiny obj!
+RawModel OBJLoader::load(const std::string &fileName) {
+    std::string path = MODEL_DIR + fileName + ".obj";
+    //std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
+    //containers
+    static std::vector<float> verticesArray;
+    static std::vector<float> texsArray;
+    static std::vector<float> normalsArray;
+    static std::vector<unsigned int> indices;
+    std::vector<Vertex> vertices;
+
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string err;
+
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.c_str())) {
+        throw std::runtime_error(err);
+    }
+
+    for (const auto& shape : shapes) {
+        for (const auto& index : shape.mesh.indices) {
+            verticesArray.push_back(attrib.vertices[3 * index.vertex_index + 0]);
+            verticesArray.push_back(attrib.vertices[3 * index.vertex_index + 1]);
+            verticesArray.push_back(attrib.vertices[3 * index.vertex_index + 2]);
+
+            texsArray.push_back(attrib.texcoords[2 * index.texcoord_index + 0]);
+            texsArray.push_back(1.f - attrib.texcoords[2 * index.texcoord_index + 1]);
+
+            normalsArray.push_back(attrib.normals[3 * index.normal_index + 0]);
+            normalsArray.push_back(attrib.normals[3 * index.normal_index + 1]);
+            normalsArray.push_back(attrib.normals[3 * index.normal_index + 2]);
+
+            indices.push_back(indices.size());
+        }
+    }
+
+//    std::chrono::high_resolution_clock::time_point t2 =  std::chrono::high_resolution_clock::now();
+//    std::chrono::duration<double> time_span =  std::chrono::duration_cast< std::chrono::duration<double>>(t2 - t1);
+//    LOG(INFO) << " -- tiny obj -- Loading " << path << " took " << time_span.count() << " seconds.";
+
+    return Loader::loadToVAO(verticesArray, indices, normalsArray, texsArray);
 }

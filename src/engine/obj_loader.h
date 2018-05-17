@@ -3,14 +3,22 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+
+#include <glm/glm.hpp>
 
 #include <models/raw_model.h>
-#include <glm/vec3.hpp>
-#include <glm/vec2.hpp>
 
 class OBJLoader {
 public:
     static RawModel loadModel(const std::string& fileName);
+    static RawModel load(const std::string &fileName);
+
+    struct Vertex {
+        glm::vec3 pos;
+        glm::vec2 texCoord;
+        glm::vec3 normal;
+    };
 
 private:
     static bool startsWith(const std::string& line, const std::string& pref);
@@ -23,6 +31,5 @@ private:
     static std::vector<float> _normalsArray;
     static std::vector<unsigned int > _indices;
 };
-
 
 #endif //RENDERENGINE_OBJ_LOADER_H

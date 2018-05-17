@@ -104,7 +104,7 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
     int width, height, nrChannels;
     string loc = TEX_DIR + fileName + ".png";
     //load the texture with stbi
-    unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, 4);
+    unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
     unsigned int texture;
     //generate a texture and store its id
     glGenTextures(1, &texture);

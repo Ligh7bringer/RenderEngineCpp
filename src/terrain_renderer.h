@@ -17,6 +17,7 @@ private:
     static void prepareTerrain(const Terrain &terrain);
     static void unbindTexturedModel();
     static void prepareInstance(const Terrain &terrain);
+    static void bindTextures(const Terrain& terrain);
 };
 
 

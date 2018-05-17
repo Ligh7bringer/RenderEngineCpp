@@ -8,6 +8,7 @@ out vec2 pass_texCoords;
 out vec3 surfaceNormal;
 out vec3 toLightVector;
 out vec3 toCameraVector;
+out float visibility; //used for fog
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
@@ -16,14 +17,20 @@ uniform vec3 lightPosition;
 
 uniform float useFakeLighting;
 
+//fog constants
+const float density = 0.0035;
+const float gradient = 5.0;
+
 void main() {
     //calculate world position
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+    vec4 posRelativeToCam = viewMatrix * worldPosition;
     //set gl_Position to the correct value
-    gl_Position = projectionMatrix * viewMatrix * worldPosition;
+    gl_Position = projectionMatrix * posRelativeToCam;
     //pass texture coordinates to fragment shader
     pass_texCoords = texCoords;
 
+    //change the normal to point up if fake lighting is used for this vertex
     vec3 actualNormal = normal;
     if(useFakeLighting > 0.5) {
         actualNormal = vec3(0.0, 1.0, 0.0);
@@ -36,4 +43,8 @@ void main() {
 
     //calculate the vector pointing to the camera
     toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
+
+    float distance = length(posRelativeToCam.xyz);
+    visibility = exp(-pow((distance * density), gradient));
+    visibility = clamp(visibility, 0.0, 1.0);
 }
