@@ -6,6 +6,8 @@
 
 GLFWwindow* WindowManager::_window = nullptr;
 std::string WindowManager::_title;
+double WindowManager::_lastFrameTime = 0;
+double WindowManager::_deltaTime = 0.f;
 
 void WindowManager::createWindow(const glm::vec2 &size, const std::string &title) {
     _title = title;
@@ -31,6 +33,8 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
 
     //turn vsync off
     //glfwSwapInterval(0);
+
+    _lastFrameTime = glfwGetTime();
 }
 
 void WindowManager::updateWindow() {
@@ -41,6 +45,10 @@ void WindowManager::updateWindow() {
     //swap buffers
     glfwSwapBuffers(_window);
     glfwPollEvents();
+
+    auto now = glfwGetTime();
+    _deltaTime = now - _lastFrameTime;
+    _lastFrameTime = now;
 }
 
 //close and destroy window
@@ -99,3 +107,9 @@ void WindowManager::showUPS() {
         // Store the current time
         previous = now;
 }
+
+double WindowManager::getDeltaTime() {
+    return _deltaTime;
+}
+
+

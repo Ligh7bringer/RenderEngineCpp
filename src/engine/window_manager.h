@@ -16,9 +16,14 @@ public:
     static GLFWwindow* getWindow();
     static void showUPS();
 
+    static double getDeltaTime();
+
 protected:
     static GLFWwindow* _window;
     static std::string _title;
+
+    static double _lastFrameTime;
+    static double _deltaTime;
 };
 
 

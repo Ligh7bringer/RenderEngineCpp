@@ -7,13 +7,6 @@
 
 class Entity {
 public:
-
-private:
-    TexturedModel _model;
-    glm::vec3 _position;
-    glm::vec3 _rotation;
-    float _scale;
-public:
     Entity(const TexturedModel &_model, const glm::vec3 &_position, const glm::vec3 &_rotation, float _scale);
 
     const TexturedModel &getModel() const;
@@ -27,6 +20,12 @@ public:
 
     void translate(float dx, float dy, float dz);
     void rotate(float dx, float dy, float dz);
+
+protected:
+    TexturedModel _model;
+    glm::vec3 _position;
+    glm::vec3 _rotation;
+    float _scale;
 };
 
 

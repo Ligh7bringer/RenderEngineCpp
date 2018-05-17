@@ -7,24 +7,24 @@ const float SPEED = 0.3f;
 
 //handle keyboard input and change the camera's position accordingly
 void Camera::move() {
-    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
-        _position.z -= SPEED;
-    }
-    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
-        _position.x += SPEED;
-    }
-    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
-        _position.x -= SPEED;
-    }
-    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
-        _position.z += SPEED;
-    }
-    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
-        _position.y += SPEED;
-    }
-    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        _position.y -= SPEED;
-    }
+//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
+//        _position.z -= SPEED;
+//    }
+//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
+//        _position.x += SPEED;
+//    }
+//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
+//        _position.x -= SPEED;
+//    }
+//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
+//        _position.z += SPEED;
+//    }
+//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
+//        _position.y += SPEED;
+//    }
+//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+//        _position.y -= SPEED;
+//    }
 }
 
 // -- getters --------------------------------

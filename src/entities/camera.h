@@ -15,7 +15,7 @@ public:
     void move();
 
 private:
-    glm::vec3 _position = glm::vec3(0.f, 2.f, 0.f);
+    glm::vec3 _position = glm::vec3(100.f, 2.f, -45.f);
     float _pitch;
     float _yaw;
     float _roll;
