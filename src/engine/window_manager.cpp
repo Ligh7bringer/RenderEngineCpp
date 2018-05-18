@@ -1,13 +1,19 @@
 #include "window_manager.h"
+#include "Log.h"
+
 #include <glad/glad.h>
+
 #include <string>
 #include <iostream>
-#include "Log.h"
 
 GLFWwindow* WindowManager::_window = nullptr;
 std::string WindowManager::_title;
-double WindowManager::_lastFrameTime = 0;
+double WindowManager::_lastFrameTime = 0.f;
 double WindowManager::_deltaTime = 0.f;
+glm::vec2 WindowManager::_scrollOld = {0.f, 0.f};
+glm::vec2 WindowManager::_scrollDelta = {0.f, 0.f};;
+glm::vec2 WindowManager::_cursorPos = {0.f, 0.f};;
+glm::vec2 WindowManager::_cursorDelta = {0.f, 0.f};;
 
 void WindowManager::createWindow(const glm::vec2 &size, const std::string &title) {
     _title = title;
@@ -34,6 +40,17 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     //turn vsync off
     //glfwSwapInterval(0);
 
+    //set callback functions so we are notified of mouse wheel movement and cursor movement
+    glfwSetScrollCallback(_window, scroll_callback);
+    glfwSetCursorPosCallback(_window, cursor_position_callback);
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(_window, &mouseX, &mouseY);
+    _cursorPos = {
+            static_cast<float>(mouseX),
+            static_cast<float>(mouseY)
+    };
+
     _lastFrameTime = glfwGetTime();
 }
 
@@ -46,9 +63,14 @@ void WindowManager::updateWindow() {
     glfwSwapBuffers(_window);
     glfwPollEvents();
 
+    //calclate delta time
     auto now = glfwGetTime();
     _deltaTime = now - _lastFrameTime;
     _lastFrameTime = now;
+
+//    _cursorPos = { 0.f, 0.f };
+//    _scrollDelta = { 0.f, 0.f };
+//      _scrollOld = {0, 0};
 }
 
 //close and destroy window
@@ -111,5 +133,58 @@ void WindowManager::showUPS() {
 double WindowManager::getDeltaTime() {
     return _deltaTime;
 }
+
+//this is called by glfw when the scroll is used
+void WindowManager::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    auto newX = static_cast<float>(xoffset);
+    auto newY = static_cast<float>(yoffset);
+
+    //calculate difference between mouse wheel values this frame and last frame
+    _scrollDelta = {
+            newX - _scrollOld.x,
+            newY - _scrollOld.y
+    };
+
+    //store mouse wheel values
+    _scrollOld = {
+            newX,
+            newY
+    };
+}
+
+void WindowManager::cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
+    auto newX = static_cast<float>(xpos);
+    auto newY = static_cast<float>(ypos);
+
+    //calculate difference between mouse position
+    _cursorDelta = {
+            newX - _cursorPos.x,
+            newY - _cursorPos.y
+    };
+
+    //store mouse position
+    _cursorPos = {
+            newX,
+            newY
+    };
+}
+
+const glm::vec2 &WindowManager::getMouseWheelDelta() {
+    return _scrollDelta;
+}
+
+const glm::vec2 &WindowManager::getCursorDelta() {
+    return _cursorDelta;
+}
+
+const glm::vec2 &WindowManager::getMouseWheel() {
+    return _scrollOld;
+}
+
+void WindowManager::resetMouseWheel() {
+    _scrollOld = { 0, 0 };
+}
+
+
 
 

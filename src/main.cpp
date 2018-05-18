@@ -47,7 +47,8 @@ int main() {
         entities.push_back(ent3);
     }
 
-    Player player = Player(playerModel, glm::vec3(100.f, 0.f, -50.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
+    Player player = Player(playerModel, glm::vec3(400.f, 0.f, 400.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
+    Camera cam = Camera(player);
 
     //terrains ----------------------------------------------------------------
     /* textures */
@@ -58,11 +59,10 @@ int main() {
     TerrainTexture blendMap = TerrainTexture(Loader::loadTexture("blendMap2"));
     TerrainTexturePack pack = TerrainTexturePack(bgTex, rTex, gTex, bTex);
     /*---------------------------------------------------*/
-    Terrain terrain = Terrain(0, -800, pack, blendMap);
-    Terrain terrain2 = Terrain(-800, -800, pack, blendMap);
+    Terrain terrain = Terrain(0, -1, pack, blendMap);
+    Terrain terrain2 = Terrain(1, -1, pack, blendMap);
     //-------------------------------------------------------------------------
 
-    Camera cam = Camera();
     Light light = Light(glm::vec3(0.f, 2000.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
 
     MasterRenderer::initialise();
@@ -72,6 +72,7 @@ int main() {
         //handle keyboard input
         cam.move();
         player.move();
+        LOG(DEBUG) << player.getPosition().x << ", " << player.getPosition().z;
 
         for(const auto& cube : entities) {
             //process entities

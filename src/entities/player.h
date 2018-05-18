@@ -16,8 +16,6 @@ private:
     float _currentTurnSpeed;
     float _upwardsSpeed;
     bool _inAir;
-
-    float toRadians(float deg);
 };
 
 

@@ -3,9 +3,11 @@
 
 #include <glm/vec3.hpp>
 
+#include "player.h"
+
 class Camera {
 public:
-    Camera() = default;
+    explicit Camera(const Player &pl);
 
     const glm::vec3 &getPosition() const;
     float getPitch() const;
@@ -19,6 +21,18 @@ private:
     float _pitch;
     float _yaw;
     float _roll;
+
+    float _distanceFromPlayer;
+    float _angleAroundPlayer;
+
+    const Player& _player;
+
+    void calculateZoom();
+    void calculatePitch();
+    void calculateAngleAroundPlayer();
+    float calculateHorizontalDistance();
+    float calculateVerticalDistance();
+    void calculatePosition(float hdist, float vdist);
 };
 
 

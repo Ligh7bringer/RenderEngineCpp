@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.9)
 #name of the project
 project(RenderEngine)
 
+#use c++11
+set(CMAKE_CXX_STANDARD 11)
+
 #Main output directory
 SET(OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 # Ouput all DLLs from all libs into main build folder

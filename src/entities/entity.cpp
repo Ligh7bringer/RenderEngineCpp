@@ -27,24 +27,24 @@ const TexturedModel &Entity::getModel() const {
     return _model;
 }
 
-void Entity::setModel(const TexturedModel &_model) {
-    Entity::_model = _model;
+void Entity::setModel(const TexturedModel &model) {
+    _model = model;
 }
 
 const glm::vec3 &Entity::getPosition() const {
     return _position;
 }
 
-void Entity::setPosition(const glm::vec3 &_position) {
-    Entity::_position = _position;
+void Entity::setPosition(const glm::vec3 &position) {
+    _position = position;
 }
 
 const glm::vec3 &Entity::getRotation() const {
     return _rotation;
 }
 
-void Entity::setRotation(const glm::vec3 &_rotation) {
-    Entity::_rotation = _rotation;
+void Entity::setRotation(const glm::vec3 &rotation) {
+    _rotation = rotation;
 }
 
 float Entity::getScale() const {

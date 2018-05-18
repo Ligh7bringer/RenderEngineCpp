@@ -3,10 +3,11 @@
 #include <Log.h>
 
 #include <GLFW/glfw3.h>
+#include <glm/detail/func_trigonometric.inl>
 
 #include <cmath>
 
-const float RUN_SPEED = 10.f;
+const float RUN_SPEED = 100.f;
 const float TURN_SPEED = 100.f;
 const float GRAVITY = -25.f;
 const float JUMP_POWER = 12.f;
@@ -21,8 +22,8 @@ void Player::move() {
     auto dt = WindowManager::getDeltaTime();
     rotate(0.f, _currentTurnSpeed * dt, 0.f);
     auto distance = _currentSpeed * dt;
-    auto dx = distance * std::sin(toRadians(getRotation().y));
-    auto dz = distance * std::cos(toRadians(getRotation().y));
+    auto dx = distance * std::sin(glm::radians(getRotation().y));
+    auto dz = distance * std::cos(glm::radians(getRotation().y));
     translate(dx, 0, dz);
 
     _upwardsSpeed += GRAVITY * dt;
@@ -64,8 +65,6 @@ void Player::jump() {
     }
 }
 
-float Player::toRadians(float deg) {
-    return static_cast<float>(deg * M_PI / 180.0);
-}
+
 
 

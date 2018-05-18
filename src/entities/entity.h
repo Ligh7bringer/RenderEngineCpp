@@ -10,11 +10,11 @@ public:
     Entity(const TexturedModel &_model, const glm::vec3 &_position, const glm::vec3 &_rotation, float _scale);
 
     const TexturedModel &getModel() const;
-    void setModel(const TexturedModel &_model);
+    void setModel(const TexturedModel &model);
     const glm::vec3 &getPosition() const;
-    void setPosition(const glm::vec3 &_position);
+    void setPosition(const glm::vec3 &position);
     const glm::vec3 &getRotation() const;
-    void setRotation(const glm::vec3 &_rotation);
+    void setRotation(const glm::vec3 &rotation);
     float getScale() const;
     void scale(float _scale);
 

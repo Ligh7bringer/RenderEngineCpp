@@ -28,3 +28,7 @@ glm::mat4 Maths::createViewMatrix(Camera &camera) {
 
     return matrix;
 }
+
+float Maths::toRadians(float deg) {
+    return static_cast<float>(deg * M_PI / 180.0);
+}

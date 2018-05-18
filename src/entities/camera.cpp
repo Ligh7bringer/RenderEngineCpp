@@ -1,30 +1,62 @@
-#include <GLFW/glfw3.h>
 #include <engine/window_manager.h>
 #include "camera.h"
 
-//the movement speed of the camera
-const float SPEED = 0.3f;
+#include <GLFW/glfw3.h>
+#include <glm/detail/func_trigonometric.inl>
+
+#include <cmath>
+#include <Log.h>
+
+Camera::Camera(const Player &pl) : _player(pl), _distanceFromPlayer(25.f) {}
 
 //handle keyboard input and change the camera's position accordingly
 void Camera::move() {
-//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_W) == GLFW_PRESS) {
-//        _position.z -= SPEED;
-//    }
-//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_D) == GLFW_PRESS) {
-//        _position.x += SPEED;
-//    }
-//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_A) == GLFW_PRESS) {
-//        _position.x -= SPEED;
-//    }
-//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_S) == GLFW_PRESS) {
-//        _position.z += SPEED;
-//    }
-//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS) {
-//        _position.y += SPEED;
-//    }
-//    if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-//        _position.y -= SPEED;
-//    }
+    calculateZoom();
+    calculatePitch();
+    calculateAngleAroundPlayer();
+
+    auto hDist = calculateHorizontalDistance();
+    auto vDist = calculateVerticalDistance();
+    calculatePosition(hDist, vDist);
+
+    _yaw = 180.f - (_player.getRotation().y + _angleAroundPlayer);
+}
+
+void Camera::calculateZoom() {
+    auto zoomLevel = WindowManager::getMouseWheel().y * 1.5f;
+    _distanceFromPlayer -= zoomLevel;
+    WindowManager::resetMouseWheel();
+}
+
+void Camera::calculatePitch() {
+    if(glfwGetMouseButton(WindowManager::getWindow(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        auto pitchChange = WindowManager::getCursorDelta().y * 0.1f;
+        _pitch -= pitchChange;
+    }
+}
+
+void Camera::calculateAngleAroundPlayer() {
+    if(glfwGetMouseButton(WindowManager::getWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        auto angleChange = WindowManager::getCursorDelta().x * 0.3f;
+        _angleAroundPlayer -= angleChange;
+    }
+}
+
+float Camera::calculateHorizontalDistance() {
+    return _distanceFromPlayer * std::cos(glm::radians(_pitch));
+}
+
+float Camera::calculateVerticalDistance() {
+    return _distanceFromPlayer * std::sin(glm::radians(_pitch));
+}
+
+void Camera::calculatePosition(float hdist, float vdist) {
+    auto theta = _player.getRotation().y + _angleAroundPlayer;
+    auto xOffset = hdist * std::sin(glm::radians(theta));
+    auto zOffset = hdist * std::cos(glm::radians(theta));
+    _position.x = _player.getPosition().x - xOffset;
+    _position.z = _player.getPosition().z - zOffset;
+    _position.y = _player.getPosition().y + vdist + 10.f;
 }
 
 // -- getters --------------------------------
@@ -43,3 +75,13 @@ float Camera::getYaw() const {
 float Camera::getRoll() const {
     return _roll;
 }
+
+
+
+
+
+
+
+
+
+

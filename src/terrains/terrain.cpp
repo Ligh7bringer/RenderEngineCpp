@@ -4,10 +4,7 @@
 #include <vector>
 
 Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack& pack, const TerrainTexture& blendMap) : _texturePack(pack), _blendMap(blendMap),
-                                                                                                           _model(generateTerrain()) {
-    _x = gridX;
-    _z = gridZ;
-}
+                                                                                                           _model(generateTerrain()), _x(gridX), _z(gridZ) {}
 
 RawModel Terrain::generateTerrain() {
     auto count = VERTEX_COUNT * VERTEX_COUNT;
