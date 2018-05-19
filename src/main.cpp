@@ -37,7 +37,7 @@ int main() {
     TexturedModel playerModel = TexturedModel(OBJLoader::loadModel("player"), ModelTexture(Loader::loadTexture("playerTexture")));
 
     std::vector<Entity> entities;
-    for(int i = 0; i < 500; ++i) {
+    for(int i = 0; i < 1; ++i) {
         auto ent = Entity(tree, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, 0.f, 0.f), 3.f);
         auto ent2 = Entity(grass, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, 0.f, 0.f), 1.f);
         auto ent3 = Entity(fern, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, 0.f, 0.f), 0.5f);
@@ -59,11 +59,11 @@ int main() {
     TerrainTexture blendMap = TerrainTexture(Loader::loadTexture("blendMap2"));
     TerrainTexturePack pack = TerrainTexturePack(bgTex, rTex, gTex, bTex);
     /*---------------------------------------------------*/
-    Terrain terrain = Terrain(0, -1, pack, blendMap);
-    Terrain terrain2 = Terrain(1, -1, pack, blendMap);
+    Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap2");
+    //Terrain terrain2 = Terrain(1, -1, pack, blendMap, "heightmap");
     //-------------------------------------------------------------------------
 
-    Light light = Light(glm::vec3(0.f, 2000.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
+    Light light = Light(glm::vec3(2000.f, 2000.f, -1000.f), glm::vec3(1.f, 1.f, 1.f));
 
     MasterRenderer::initialise();
 
@@ -72,7 +72,6 @@ int main() {
         //handle keyboard input
         cam.move();
         player.move();
-        LOG(DEBUG) << player.getPosition().x << ", " << player.getPosition().z;
 
         for(const auto& cube : entities) {
             //process entities
@@ -82,7 +81,7 @@ int main() {
         MasterRenderer::processEntity(player);
 
         MasterRenderer::processTerrain(terrain);
-        MasterRenderer::processTerrain(terrain2);
+        //MasterRenderer::processTerrain(terrain2);
 
         //render entities
         MasterRenderer::render(light, cam);

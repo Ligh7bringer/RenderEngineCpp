@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <textures/image.h>
 #include "models/raw_model.h"
 
 class Loader {
@@ -11,6 +12,7 @@ public:
                                   std::vector<float> &texCoords);
     static void cleanUp();
     static unsigned int loadTexture(const std::string &fileName);
+    static Image loadTextureWithData(const std::string &fileName);
 
 private:
     static std::vector<unsigned int> _vaos;

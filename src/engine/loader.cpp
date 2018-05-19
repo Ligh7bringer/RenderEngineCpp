@@ -4,6 +4,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <textures/image.h>
 
 const std::string TEX_DIR = "res/textures/";
 
@@ -109,12 +110,16 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
     //generate a texture and store its id
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -1.f);
 
     //if the image was loaded successfully
     if(data) {
         //NOTE: GL_RGBA is the correct channel for images with an alpha channel
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        //i am not sure if this is necessary??
+        //so this line generates lower resolutions of the texture
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         LOG(ERR) << "Texture " << loc << " couldn't be loaded!";
@@ -127,6 +132,15 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     return texture;
+}
+
+Image Loader::loadTextureWithData(const std::string &fileName) {
+    int width, height, nrChannels;
+    string loc = TEX_DIR + fileName + ".png";
+    //load the texture with stbi
+    unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
+    Image image = Image(data, nrChannels, width, height);
+    return image;
 }
 
 

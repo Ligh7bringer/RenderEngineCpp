@@ -38,7 +38,7 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     LOG(INFO) << "OpenGL " << glGetString(GL_VERSION);
 
     //turn vsync off
-    //glfwSwapInterval(0);
+    glfwSwapInterval(0);
 
     //set callback functions so we are notified of mouse wheel movement and cursor movement
     glfwSetScrollCallback(_window, scroll_callback);
@@ -67,10 +67,6 @@ void WindowManager::updateWindow() {
     auto now = glfwGetTime();
     _deltaTime = now - _lastFrameTime;
     _lastFrameTime = now;
-
-//    _cursorPos = { 0.f, 0.f };
-//    _scrollDelta = { 0.f, 0.f };
-//      _scrollOld = {0, 0};
 }
 
 //close and destroy window
