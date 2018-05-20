@@ -12,7 +12,7 @@
 class OBJLoader {
 public:
     static RawModel loadModel(const std::string& fileName);
-    static RawModel load(const std::string &fileName);
+    static RawModel LOAD(const std::string& fileName);
 
     struct Vertex {
         glm::vec3 pos;
@@ -30,6 +30,8 @@ private:
     static std::vector<float> _texsArray;
     static std::vector<float> _normalsArray;
     static std::vector<unsigned int > _indices;
+//    static bool vec2equals(const glm::vec& lhs, const glm::vec2& rhs); //why == is not overloaded for vectors is beyond me!
+//    static bool vec3equals(const glm::vec3& lhs, const glm::vec3& rhs);
 };
 
 #endif //RENDERENGINE_OBJ_LOADER_H

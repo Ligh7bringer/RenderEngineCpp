@@ -81,7 +81,7 @@ void TerrainRenderer::unbindTexturedModel() {
 
 void TerrainRenderer::prepareInstance(const Terrain &terrain) {
     //calculate the transformation matrix using the model's position, rotation and scale
-    glm::mat4 transformationMat = Maths::createTransformationMatrix(glm::vec3(terrain.get_x(), 0, terrain.get_z()), glm::vec3(0, 0, 0), 1.f);
+    glm::mat4 transformationMat = Maths::createTransformationMatrix(glm::vec3(terrain.get_x(), 0.f, terrain.get_z()), glm::vec3(0, 0, 0), 1.f);
     _shader.setMatrix("transformationMatrix", transformationMat);
 }
 

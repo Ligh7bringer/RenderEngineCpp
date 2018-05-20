@@ -4,6 +4,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <glm/glm.hpp>
+
 #include <textures/image.h>
 
 const std::string TEX_DIR = "res/textures/";
@@ -13,8 +15,7 @@ std::vector<unsigned int> Loader::_vbos;
 std::vector<unsigned int> Loader::_textures;
 
 //creates a raw model with the passed vertices
-RawModel
-Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &normals,
+RawModel Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &normals,
                   std::vector<float> &texCoords) {
     //create a vertex array
     unsigned int vaoID = createVAO();
@@ -27,6 +28,71 @@ Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indi
 
     //create and return the model
     return RawModel(vaoID, static_cast<int>(indices.size()));
+}
+
+//does the same thing as the method above, however vectors of glm vectors can be used instead of floats (used for model loading)
+RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices,
+                           std::vector<glm::vec3> &normals, std::vector<glm::vec2> &texCoords) {
+
+    //create a vertex array
+    unsigned int vaoID = createVAO();
+    bindIndicesBuffer(indices);
+    //store the data, starting from index 0
+    storeDataInVBO(0, positions);
+    storeDataInVBO(1, texCoords);
+    storeDataInVBO(2, normals);
+    unbindVAO();
+
+    //create and return the model
+    return RawModel(vaoID, static_cast<int>(indices.size()));
+}
+
+void Loader::storeData(unsigned int attNum, std::vector<float> &data, unsigned int coordSize) {
+    //create a vbo
+    auto vboID = createVBO();
+    //store it for later
+    _vbos.push_back(vboID);
+    //bind it so it can be used
+    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    //store data in the vbo: type of buffer, size, actual data, draw type
+    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing a float array which is exactly what openGL is expecting
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), &data.front(), GL_STATIC_DRAW);
+    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
+    glVertexAttribPointer(attNum, coordSize, GL_FLOAT, GL_FALSE, 0, nullptr);
+    //unbind the vbo, 0 unbinds the current one
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Loader::storeDataInVBO(unsigned int attNum, std::vector<glm::vec3> &data) {
+    //create a vbo
+    auto vboID = createVBO();
+    //store it for later
+    _vbos.push_back(vboID);
+    //bind it so it can be used
+    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    //store data in the vbo: type of buffer, size, actual data, draw type
+    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing an array which is exactly what openGL is expecting
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * data.size(), &data.front(), GL_STATIC_DRAW);
+    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
+    glVertexAttribPointer(attNum, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    //unbind the vbo, 0 unbinds the current one
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Loader::storeDataInVBO(unsigned int attNum, std::vector<glm::vec2> &data) {
+    //create a vbo
+    auto vboID = createVBO();
+    //store it for later
+    _vbos.push_back(vboID);
+    //bind it so it can be used
+    glBindBuffer(GL_ARRAY_BUFFER, vboID);
+    //store data in the vbo: type of buffer, size, actual data, draw type
+    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing an array which is exactly what openGL is expecting
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * data.size(), &data.front(), GL_STATIC_DRAW);
+    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
+    glVertexAttribPointer(attNum, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    //unbind the vbo, 0 unbinds the current one
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 unsigned int Loader::createVAO() {
@@ -52,22 +118,6 @@ unsigned int Loader::createVBO() {
 void Loader::unbindVAO() {
     //when 0 is passed, the current vao is unbound
     glBindVertexArray(0);
-}
-
-void Loader::storeData(unsigned int attNum, std::vector<float> &data, unsigned int coordSize) {
-    //create a vbo
-    auto vboID = createVBO();
-    //store it for later
-    _vbos.push_back(vboID);
-    //bind it so it can be used
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    //store data in the vbo: type of buffer, size, actual data, draw type
-    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing a float array which is exactly what openGL is expecting
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), &data.front(), GL_STATIC_DRAW);
-    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
-    glVertexAttribPointer(attNum, coordSize, GL_FLOAT, GL_FALSE, 0, nullptr);
-    //unbind the vbo, 0 unbinds the current one
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Loader::cleanUp() {
@@ -134,12 +184,34 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
     return texture;
 }
 
+//same as the method above but it stores data about the loaded texture
 Image Loader::loadTextureWithData(const std::string &fileName) {
     int width, height, nrChannels;
     string loc = TEX_DIR + fileName + ".png";
     //load the texture with stbi
     unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
-    Image image = Image(data, nrChannels, width, height);
+    unsigned int texture;
+    //generate a texture and store its id
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -1.f);
+    //if the image was loaded successfully
+    if(data) {
+        //NOTE: GL_RGBA is the correct channel for images with an alpha channel
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        //so this line generates lower resolutions of the texture
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        LOG(ERR) << "Texture " << loc << " couldn't be loaded!";
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    Image image = Image(texture, data, nrChannels, width, height);
     return image;
 }
 

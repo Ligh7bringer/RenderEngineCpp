@@ -6,6 +6,8 @@
 #include <stb_image.h>
 #include <glm/glm.hpp>
 #include <Log.h>
+#include <glad/glad.h>
+#include <utilities/maths.h>
 
 Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack &pack, const TerrainTexture &blendMap,
                  const std::string &heightmap) : _texturePack(pack), _blendMap(blendMap),
@@ -14,6 +16,9 @@ Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack &pack, const Ter
 RawModel Terrain::generateTerrain(const std::string &fileName) {
     auto img = Loader::loadTextureWithData(fileName);
     auto VERTEX_COUNT = img.height;
+    _heights.resize(VERTEX_COUNT);
+    for (auto& height : _heights)
+        height.resize(VERTEX_COUNT);
 
     auto count = VERTEX_COUNT * VERTEX_COUNT;
     auto vertices = std::vector<float>(count * 3);
@@ -25,7 +30,9 @@ RawModel Terrain::generateTerrain(const std::string &fileName) {
     for(int i = 0; i < VERTEX_COUNT; ++i) {
         for(int j = 0; j < VERTEX_COUNT; ++j) {
             vertices[vertexPointer*3] = (float)j/((float)VERTEX_COUNT - 1) * SIZE;
-            vertices[vertexPointer*3+1] = getHeight(j, i, img);
+            auto height = getHeight(j, i, img);
+            _heights[j][i] = height;
+            vertices[vertexPointer*3+1] = height;
             vertices[vertexPointer*3+2] = (float)i/((float)VERTEX_COUNT - 1) * SIZE;
             auto normal = calculateNormal(j, i, img);
             normals[vertexPointer*3] = normal.x;
@@ -56,7 +63,7 @@ RawModel Terrain::generateTerrain(const std::string &fileName) {
     return Loader::loadToVAO(vertices, indices, normals, texCoords);
 }
 
-float Terrain::getHeight(float x, float y, Image &image) {
+float Terrain::getHeight(float x, float y, const Image &image) {
     if(x < 0 || y < 0) {
         return 0;
     }
@@ -111,5 +118,32 @@ const TerrainTexturePack &Terrain::get_texturePack() const {
 
 const TerrainTexture &Terrain::get_blendMap() const {
     return _blendMap;
+}
+
+float Terrain::getHeightOfTerrain(float worldX, float worldZ) const {
+    auto terrainX = worldX - _x;
+    auto terrainZ = worldZ - _z;
+    float gridSquareSize = SIZE / static_cast<float>(_heights.size() - 1);
+    auto gridX = static_cast<int>(std::floor(terrainX / gridSquareSize));
+    auto gridZ = static_cast<int>(std::floor(terrainZ / gridSquareSize));
+    if(gridX > _heights.size() - 1 || gridZ > _heights.size() - 1 || gridX < 0 || gridZ < 0) {
+        return 0.f;
+    }
+
+    float xCoord = std::fmod(terrainX, gridSquareSize) / gridSquareSize;
+    float zCoord = std::fmod(terrainZ, gridSquareSize) / gridSquareSize;
+    float answer;
+    if(xCoord <= (1.f - zCoord)) {
+        answer = Maths::barryCentricInterpolation(glm::vec3{0, _heights[gridX][gridZ], 0},
+                                                  glm::vec3{1, _heights[gridX + 1][gridZ], 0},
+                                                  glm::vec3{0, _heights[gridX][gridZ + 1], 1},
+                                                  glm::vec2{xCoord, zCoord});
+    } else {
+        answer = Maths::barryCentricInterpolation(glm::vec3{0, _heights[gridX + 1][gridZ], 0},
+                                                  glm::vec3{1, _heights[gridX + 1][gridZ + 1], 1},
+                                                  glm::vec3{0, _heights[gridX][gridZ + 1], 1},
+                                                  glm::vec2{xCoord, zCoord});
+    }
+    return answer;
 }
 

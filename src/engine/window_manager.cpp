@@ -35,7 +35,10 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     // Create Context and Load OpenGL Functions
     glfwMakeContextCurrent(_window);
     gladLoadGL();
-    LOG(INFO) << "OpenGL " << glGetString(GL_VERSION);
+    LOG(INFO) << "GL Vendor: " << glGetString(GL_VENDOR);
+    LOG(INFO) << "GL Renderer: " << glGetString(GL_RENDERER);
+    LOG(INFO) << "GL Version: " << glGetString(GL_VERSION);
+    LOG(INFO) << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     //turn vsync off
     glfwSwapInterval(0);

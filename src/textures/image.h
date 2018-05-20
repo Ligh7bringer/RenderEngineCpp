@@ -6,17 +6,19 @@
 
 class Image {
 public:
-    Image(unsigned char *data, unsigned int channels, unsigned int width, unsigned int height) : data(data),
+    Image(unsigned int id, unsigned char *data, unsigned int channels, unsigned int width, unsigned int height) : data(data),
                                                                                                  channels(channels),
                                                                                                  width(width),
-                                                                                                 height(height) {}
+                                                                                                 height(height), id(id) {}
+
+    unsigned int id;
     unsigned char* data;
     int channels;
     int width;
     int height;
 
     //returns RGBA value of pixel at i, j or should do
-    glm::vec4 getRGB(unsigned int i, unsigned int j) {
+    glm::vec4 getRGB(unsigned int i, unsigned int j) const {
         unsigned bytePerPixel = channels;
         unsigned char* pixelOffset = data + (i + height * j) * bytePerPixel;
         unsigned char r = pixelOffset[0];

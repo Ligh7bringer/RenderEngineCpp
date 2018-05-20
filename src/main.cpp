@@ -12,7 +12,6 @@
 // System Headers
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <memory>
 #include <entities/player.h>
 
 structlog LOGCFG = {};
@@ -31,23 +30,12 @@ int main() {
     //create a window
     WindowManager::createWindow(glm::vec2(1280, 720), "Render Engine");
 
-    TexturedModel tree = TexturedModel(OBJLoader::loadModel("tree"), ModelTexture(Loader::loadTexture("tree")));
-    TexturedModel grass = TexturedModel(OBJLoader::loadModel("grassModel"), ModelTexture(Loader::loadTexture("grassTexture"), true, true));
-    TexturedModel fern = TexturedModel(OBJLoader::loadModel("fern"), ModelTexture(Loader::loadTexture("fern"), true, true));
-    TexturedModel playerModel = TexturedModel(OBJLoader::loadModel("player"), ModelTexture(Loader::loadTexture("playerTexture")));
+    TexturedModel tree = TexturedModel(OBJLoader::LOAD("rock2"), ModelTexture(Loader::loadTexture("rock2")));
+    TexturedModel grass = TexturedModel(OBJLoader::LOAD("grassModel"), ModelTexture(Loader::loadTexture("grassTexture"), true, true));
+    TexturedModel fern = TexturedModel(OBJLoader::LOAD("fern"), ModelTexture(Loader::loadTexture("fern"), true, true));
+    TexturedModel playerModel = TexturedModel(OBJLoader::LOAD("player"), ModelTexture(Loader::loadTexture("playerTexture")));
 
-    std::vector<Entity> entities;
-    for(int i = 0; i < 1; ++i) {
-        auto ent = Entity(tree, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, 0.f, 0.f), 3.f);
-        auto ent2 = Entity(grass, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, 0.f, 0.f), 1.f);
-        auto ent3 = Entity(fern, glm::vec3(randCoord(), 0.f, randCoord()), glm::vec3(0.f, 0.f, 0.f), 0.5f);
-
-        entities.push_back(ent);
-        entities.push_back(ent2);
-        entities.push_back(ent3);
-    }
-
-    Player player = Player(playerModel, glm::vec3(400.f, 0.f, 400.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
+    Player player = Player(playerModel, glm::vec3(0.f, 80.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
     Camera cam = Camera(player);
 
     //terrains ----------------------------------------------------------------
@@ -56,12 +44,31 @@ int main() {
     TerrainTexture rTex = TerrainTexture(Loader::loadTexture("mud"));
     TerrainTexture gTex = TerrainTexture(Loader::loadTexture("grassFlowers"));
     TerrainTexture bTex = TerrainTexture(Loader::loadTexture("path"));
-    TerrainTexture blendMap = TerrainTexture(Loader::loadTexture("blendMap2"));
+    TerrainTexture blendMap = TerrainTexture(Loader::loadTexture("blendMap"));
     TerrainTexturePack pack = TerrainTexturePack(bgTex, rTex, gTex, bTex);
     /*---------------------------------------------------*/
-    Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap2");
-    //Terrain terrain2 = Terrain(1, -1, pack, blendMap, "heightmap");
+    Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap");
     //-------------------------------------------------------------------------
+
+    std::vector<Entity> entities;
+    for(int i = 0; i < 100; ++i) {
+        auto x = randCoord(0, 800);
+        auto z = randCoord(0, 800);
+        auto y = terrain.getHeightOfTerrain(x, z);
+        auto ent = Entity(tree, glm::vec3(x, y, z), glm::vec3(0.f, randCoord(0, 270), 0.f), 3.f);
+        x = randCoord(0, 800);
+        z = randCoord(0, 800);
+        y = terrain.getHeightOfTerrain(x, z);
+        auto ent2 = Entity(grass, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 1.f);
+        x = randCoord(0, 800);
+        z = randCoord(0, 800);
+        y = terrain.getHeightOfTerrain(x, z);
+        auto ent3 = Entity(fern, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 0.5f);
+
+        entities.push_back(ent);
+        entities.push_back(ent2);
+        entities.push_back(ent3);
+    }
 
     Light light = Light(glm::vec3(2000.f, 2000.f, -1000.f), glm::vec3(1.f, 1.f, 1.f));
 
@@ -71,7 +78,7 @@ int main() {
     while (WindowManager::shouldClose() == 0) {
         //handle keyboard input
         cam.move();
-        player.move();
+        player.move(terrain);
 
         for(const auto& cube : entities) {
             //process entities
@@ -81,7 +88,6 @@ int main() {
         MasterRenderer::processEntity(player);
 
         MasterRenderer::processTerrain(terrain);
-        //MasterRenderer::processTerrain(terrain2);
 
         //render entities
         MasterRenderer::render(light, cam);

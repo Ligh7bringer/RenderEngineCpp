@@ -6,17 +6,17 @@
 #include <glm/detail/func_trigonometric.inl>
 
 #include <cmath>
+#include <terrains/terrain.h>
 
-const float RUN_SPEED = 100.f;
+const float RUN_SPEED = 20.f;
 const float TURN_SPEED = 100.f;
 const float GRAVITY = -25.f;
-const float JUMP_POWER = 12.f;
-const float TERRAIN_HEIGHT = 0.f;
+const float JUMP_POWER = 20.f;
 
 Player::Player(const TexturedModel &_model, const glm::vec3 &_position, const glm::vec3 &_rotation, float _scale)
         : Entity(_model, _position, _rotation, _scale), _currentTurnSpeed(0), _currentSpeed(0), _upwardsSpeed(0), _inAir(false) {}
 
-void Player::move() {
+void Player::move(const Terrain &terrain) {
     getInput();
 
     auto dt = WindowManager::getDeltaTime();
@@ -28,9 +28,10 @@ void Player::move() {
 
     _upwardsSpeed += GRAVITY * dt;
     translate(0.f, _upwardsSpeed * dt, 0.f);
-    if(getPosition().y < TERRAIN_HEIGHT) {
+    auto terrainHeight = terrain.getHeightOfTerrain(_position.x, _position.z);
+    if(getPosition().y < terrainHeight) {
         _upwardsSpeed = 0;
-        _position.y = TERRAIN_HEIGHT;
+        _position.y = terrainHeight;
         _inAir = false;
     }
 }

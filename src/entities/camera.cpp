@@ -7,7 +7,7 @@
 #include <cmath>
 #include <Log.h>
 
-Camera::Camera(const Player &pl) : _player(pl), _distanceFromPlayer(25.f) {}
+Camera::Camera(const Player &pl) : _player(pl), _distanceFromPlayer(25.f), _pitch(0), _yaw(0), _angleAroundPlayer(0) {}
 
 //handle keyboard input and change the camera's position accordingly
 void Camera::move() {
@@ -56,7 +56,7 @@ void Camera::calculatePosition(float hdist, float vdist) {
     auto zOffset = hdist * std::cos(glm::radians(theta));
     _position.x = _player.getPosition().x - xOffset;
     _position.z = _player.getPosition().z - zOffset;
-    _position.y = _player.getPosition().y + vdist + 10.f;
+    _position.y = _player.getPosition().y + vdist + 5.f;
 }
 
 // -- getters --------------------------------
