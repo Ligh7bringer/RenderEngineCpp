@@ -8,6 +8,7 @@ private:
     unsigned int _vertexCount;
 
 public:
+    RawModel() = default;
     //set the vao id and vertex count
     explicit RawModel(unsigned int id, unsigned int count) {
         _vaoID = id;
@@ -17,6 +18,14 @@ public:
     //getters
     unsigned int get_vaoID() const { return _vaoID; }
     int get_vertexCount() const { return _vertexCount; }
+
+    void set_vaoID(unsigned int _vaoID) {
+        RawModel::_vaoID = _vaoID;
+    }
+
+    void set_vertexCount(unsigned int _vertexCount) {
+        RawModel::_vertexCount = _vertexCount;
+    }
 
 };
 

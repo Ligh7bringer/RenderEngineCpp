@@ -26,7 +26,7 @@ public:
 
 private:
     const float SIZE = 800;
-    const float MAX_HEIGHT = 40.f;
+    const float MAX_HEIGHT = 80.f;
     const float MIN_HEIGHT = -40.f;
     const float MAX_PIXEL_COLOUR = 256 * 256 * 256;
 

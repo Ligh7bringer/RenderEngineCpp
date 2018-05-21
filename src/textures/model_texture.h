@@ -4,9 +4,11 @@
 
 class ModelTexture {
 public:
-    //very simple class, everything needed is the texture id
-    explicit ModelTexture(unsigned int id) : _ID(id), _hasTransparency(false), _fakeLighting(false), _shineDamper(1.0f), _reflectivity(0.f) {}
-    ModelTexture(unsigned int id, bool transparent, bool fakeLighting) : _ID(id), _hasTransparency(transparent), _fakeLighting(fakeLighting), _shineDamper(1.f), _reflectivity(0.f) {}
+    //very simple class, used to store some data about a texture
+    explicit ModelTexture(unsigned int id, bool transparent=false, bool fakeLighting=false, int numOfRows=1) : _ID(id),
+           _shineDamper(1.0f), _reflectivity(0.f),
+            _hasTransparency(transparent), _fakeLighting(fakeLighting),
+            _numOfRows(numOfRows) {}
 
     unsigned int getID() const { return _ID; }
 
@@ -42,12 +44,21 @@ public:
         ModelTexture::_fakeLighting = _fakeLighting;
     }
 
+    int getNumOfRows() const {
+        return _numOfRows;
+    }
+
+    void setNumOfRows(int _numOfRows) {
+        ModelTexture::_numOfRows = _numOfRows;
+    }
+
 private:
     unsigned int _ID;
     float _shineDamper;
     float _reflectivity;
     bool _hasTransparency;
     bool _fakeLighting;
+    int _numOfRows;
 };
 
 

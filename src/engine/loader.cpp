@@ -215,5 +215,12 @@ Image Loader::loadTextureWithData(const std::string &fileName) {
     return image;
 }
 
+RawModel Loader::loadToVao(std::vector<float> &positions) {
+    auto vaoID = createVAO();
+    storeData(0, positions, 2);
+    unbindVAO();
+    return RawModel(vaoID, static_cast<unsigned int>(positions.size() / 2));
+}
+
 
 

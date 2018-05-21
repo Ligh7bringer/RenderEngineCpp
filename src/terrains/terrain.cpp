@@ -10,8 +10,10 @@
 #include <utilities/maths.h>
 
 Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack &pack, const TerrainTexture &blendMap,
-                 const std::string &heightmap) : _texturePack(pack), _blendMap(blendMap),
-                                                 _x(gridX), _z(gridZ), _model(generateTerrain(heightmap)) {}
+                 const std::string &heightmap) :
+        _x(gridX), _z(gridZ), _model(generateTerrain(heightmap)),
+        _texturePack(pack), _blendMap(blendMap)
+{}
 
 RawModel Terrain::generateTerrain(const std::string &fileName) {
     auto img = Loader::loadTextureWithData(fileName);
@@ -126,6 +128,7 @@ float Terrain::getHeightOfTerrain(float worldX, float worldZ) const {
     float gridSquareSize = SIZE / static_cast<float>(_heights.size() - 1);
     auto gridX = static_cast<int>(std::floor(terrainX / gridSquareSize));
     auto gridZ = static_cast<int>(std::floor(terrainZ / gridSquareSize));
+
     if(gridX > _heights.size() - 1 || gridZ > _heights.size() - 1 || gridX < 0 || gridZ < 0) {
         return 0.f;
     }
@@ -144,6 +147,7 @@ float Terrain::getHeightOfTerrain(float worldX, float worldZ) const {
                                                   glm::vec3{0, _heights[gridX][gridZ + 1], 1},
                                                   glm::vec2{xCoord, zCoord});
     }
+
     return answer;
 }
 

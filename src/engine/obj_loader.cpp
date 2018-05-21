@@ -10,9 +10,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
-
 const std::string MODEL_DIR = "res/models/";
 
 std::vector<float> OBJLoader::_verticesArray;

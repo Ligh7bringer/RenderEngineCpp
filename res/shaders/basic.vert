@@ -14,8 +14,9 @@ uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
-
 uniform float useFakeLighting;
+uniform float numberOfRows; //texture atlas vars
+uniform vec2 offset;
 
 //fog constants
 const float density = 0.0035;
@@ -28,7 +29,7 @@ void main() {
     //set gl_Position to the correct value
     gl_Position = projectionMatrix * posRelativeToCam;
     //pass texture coordinates to fragment shader
-    pass_texCoords = texCoords;
+    pass_texCoords = (texCoords / numberOfRows) + offset;
 
     //change the normal to point up if fake lighting is used for this vertex
     vec3 actualNormal = normal;

@@ -6,10 +6,12 @@
 
 class Image {
 public:
-    Image(unsigned int id, unsigned char *data, unsigned int channels, unsigned int width, unsigned int height) : data(data),
-                                                                                                 channels(channels),
-                                                                                                 width(width),
-                                                                                                 height(height), id(id) {}
+    Image(unsigned int id, unsigned char *data, unsigned int channels, unsigned int width, unsigned int height) :
+            id(id),
+            data(data),
+            channels(channels),
+            width(width),
+            height(height)  {}
 
     unsigned int id;
     unsigned char* data;

@@ -11,9 +11,9 @@ std::string WindowManager::_title;
 double WindowManager::_lastFrameTime = 0.f;
 double WindowManager::_deltaTime = 0.f;
 glm::vec2 WindowManager::_scrollOld = {0.f, 0.f};
-glm::vec2 WindowManager::_scrollDelta = {0.f, 0.f};;
-glm::vec2 WindowManager::_cursorPos = {0.f, 0.f};;
-glm::vec2 WindowManager::_cursorDelta = {0.f, 0.f};;
+glm::vec2 WindowManager::_scrollDelta = {0.f, 0.f};
+glm::vec2 WindowManager::_cursorPos = {0.f, 0.f};
+glm::vec2 WindowManager::_cursorDelta = {0.f, 0.f};
 
 void WindowManager::createWindow(const glm::vec2 &size, const std::string &title) {
     _title = title;
@@ -28,8 +28,7 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
 
     // Check for Valid Context
     if (_window == nullptr) {
-        LOG(ERR) << "Failed to Create OpenGL Context";
-        return;
+       throw std::runtime_error("Failed to Create OpenGL Context!");
     }
 
     // Create Context and Load OpenGL Functions
@@ -41,7 +40,7 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     LOG(INFO) << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION);
 
     //turn vsync off
-    glfwSwapInterval(0);
+    //glfwSwapInterval(0);
 
     //set callback functions so we are notified of mouse wheel movement and cursor movement
     glfwSetScrollCallback(_window, scroll_callback);

@@ -14,7 +14,6 @@ class Shader
 {
 public:
     unsigned int ID;
-
     Shader() = default;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
@@ -44,7 +43,7 @@ public:
             vertexCode   = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         }
-        catch (std::ifstream::failure e)
+        catch (std::ifstream::failure& e)
         {
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
         }
@@ -54,8 +53,6 @@ public:
 
         // 2. compile shaders
         unsigned int vertex, fragment;
-        int success;
-        char infoLog[512];
         // vertex shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, nullptr);
@@ -114,8 +111,12 @@ public:
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setVector3(const std::string& name, const glm::vec3& value) const {
+    void setVec3(const std::string &name, const glm::vec3 &value) const {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
+    }
+
+    void setVec2(const std::string &name, const glm::vec2 &value) const {
+        glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(value));
     }
 
     void setMatrix(const std::string& name, const glm::mat4& mat) const {

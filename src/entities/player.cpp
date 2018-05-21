@@ -8,13 +8,13 @@
 #include <cmath>
 #include <terrains/terrain.h>
 
-const float RUN_SPEED = 20.f;
+const float RUN_SPEED = 25.f;
 const float TURN_SPEED = 100.f;
 const float GRAVITY = -25.f;
 const float JUMP_POWER = 20.f;
 
 Player::Player(const TexturedModel &_model, const glm::vec3 &_position, const glm::vec3 &_rotation, float _scale)
-        : Entity(_model, _position, _rotation, _scale), _currentTurnSpeed(0), _currentSpeed(0), _upwardsSpeed(0), _inAir(false) {}
+        : Entity(_model, _position, _rotation, _scale), _currentSpeed(0), _currentTurnSpeed(0), _upwardsSpeed(0), _inAir(false) {}
 
 void Player::move(const Terrain &terrain) {
     getInput();

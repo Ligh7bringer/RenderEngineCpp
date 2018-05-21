@@ -1,9 +1,8 @@
 #ifndef RENDERENGINE_TEXTURED_MODEL_H
 #define RENDERENGINE_TEXTURED_MODEL_H
 
-
-#include <textures/model_texture.h>
 #include "raw_model.h"
+#include "../textures/model_texture.h"
 
 class TexturedModel {
 public:

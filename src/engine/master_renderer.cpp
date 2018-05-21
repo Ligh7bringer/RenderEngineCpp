@@ -49,17 +49,17 @@ void MasterRenderer::render(Light &light, Camera &camera) {
     prepare();
 
     _shader.use();
-    _shader.setVector3("skyColour", _skyColour);
-    _shader.setVector3("lightPosition", light.getPosition());
-    _shader.setVector3("lightColour", light.getColour());
+    _shader.setVec3("skyColour", _skyColour);
+    _shader.setVec3("lightPosition", light.getPosition());
+    _shader.setVec3("lightColour", light.getColour());
     _shader.setMatrix("viewMatrix", Maths::createViewMatrix(camera));
     Renderer::render(_entities);
     _shader.stop();
 
     _terrainShader.use();
-    _terrainShader.setVector3("skyColour", _skyColour);
-    _terrainShader.setVector3("lightPosition", light.getPosition());
-    _terrainShader.setVector3("lightColour", light.getColour());
+    _terrainShader.setVec3("skyColour", _skyColour);
+    _terrainShader.setVec3("lightPosition", light.getPosition());
+    _terrainShader.setVec3("lightColour", light.getColour());
     _terrainShader.setMatrix("viewMatrix", Maths::createViewMatrix(camera));
     TerrainRenderer::render(_terrains);
     _terrainShader.stop();

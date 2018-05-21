@@ -46,6 +46,7 @@ void Renderer::prepareTexturedModel(const TexturedModel &model) {
 
     //set the lighting uniforms in the shaders
     auto tex = model.getTexture();
+    _shader.setFloat("numberOfRows", tex.getNumOfRows());
     if(tex.hasTransparency()) {
         MasterRenderer::disableCulling();
     }
@@ -76,6 +77,11 @@ void Renderer::prepareInstance(const Entity &entity) {
     //calculate the transformation matrix using the model's position, rotation and scale
     glm::mat4 transformationMat = Maths::createTransformationMatrix(entity.getPosition(), entity.getRotation(), entity.getScale());
     _shader.setMatrix("transformationMatrix", transformationMat);
+    glm::vec2 offset = {
+            entity.getTextureXOffset(),
+            entity.getTextureYOffset()
+    };
+    _shader.setVec2("offset", offset);
 }
 
 

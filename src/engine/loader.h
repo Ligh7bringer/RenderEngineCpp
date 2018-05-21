@@ -13,6 +13,7 @@ public:
                                   std::vector<float> &texCoords);
     static RawModel loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices, std::vector<glm::vec3> &normals,
                               std::vector<glm::vec2> &texCoords);
+    static RawModel loadToVao(std::vector<float> &positions);
     static void cleanUp();
     static unsigned int loadTexture(const std::string &fileName);
     static Image loadTextureWithData(const std::string &fileName);
