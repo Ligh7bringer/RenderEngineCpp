@@ -55,8 +55,11 @@ public:
 		return _id;
 	}
 
+	unsigned char *getData() const {
+		return _data;
+	}
 
-    //returns RGBA value of pixel at i, j or should do
+	//returns RGBA value of pixel at i, j or should do
     glm::vec4 getRGB(unsigned int i, unsigned int j) const {
         unsigned bytePerPixel = _channels;
         unsigned char* pixelOffset = _data + (i + _height * j) * bytePerPixel;

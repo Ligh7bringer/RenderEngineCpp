@@ -23,8 +23,8 @@ void Renderer::initialise(Shader &shader, const glm::mat4 &projMat) {
 void Renderer::render(const std::map<TexturedModel, std::vector<Entity>> &entities) {
     for(const auto &model : entities) {
         prepareTexturedModel(model.first);
-        auto batch = model.second;
 
+        auto batch = model.second;
         for(const auto &entity : batch) {
             prepareInstance(entity);
             //render
@@ -58,8 +58,6 @@ void Renderer::prepareTexturedModel(const TexturedModel &model) {
     glActiveTexture(GL_TEXTURE0);
     //bind the model's texture
     glBindTexture(GL_TEXTURE_2D, model.getTexture().getID());
-    //enable textures
-    glEnable(GL_TEXTURE_2D);
 }
 
 void Renderer::unbindTexturedModel() {

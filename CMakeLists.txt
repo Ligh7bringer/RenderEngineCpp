@@ -37,6 +37,7 @@ include_directories(src/
                     src/entities/
                     src/terrains/
                     src/guis/
+                    src/skybox/
                     lib/glad/include/
                     lib/glfw/include/
                     lib/glm/
@@ -44,6 +45,7 @@ include_directories(src/
 
 #sources
 file(GLOB VENDORS_SOURCES lib/glad/src/glad.c)
+#header files
 file(GLOB PROJECT_HEADERS   src/*.h
                             src/engine/*.h
                             src/models/*.h
@@ -52,7 +54,9 @@ file(GLOB PROJECT_HEADERS   src/*.h
                             src/utilities/*.h
                             src/entities/*.h
                             src/terrains/*.h
-                            src/guis/*.h)
+                            src/guis/*.h
+                            src/skybox/*.h)
+#implementation files
 file(GLOB PROJECT_SOURCES   src/*.cpp
                             src/engine/*.cpp
                             src/models/*.cpp
@@ -61,11 +65,14 @@ file(GLOB PROJECT_SOURCES   src/*.cpp
                             src/utilities/*.cpp
                             src/entities/*.cpp
                             src/terrains/*.cpp
-                            src/guis/*.cpp)
+                            src/guis/*.cpp
+                            src/skybox/*.cpp)
+#shaders
 file(GLOB PROJECT_SHADERS   src/Shaders/*.comp
                             src/Shaders/*.frag
                             src/Shaders/*.geom
                             src/Shaders/*.vert)
+#everything else which is not code
 file(GLOB PROJECT_CONFIGS   CMakeLists.txt
                             README.md
                             .gitattributes

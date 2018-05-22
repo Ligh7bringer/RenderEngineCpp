@@ -3,9 +3,10 @@
 #include "master_renderer.h"
 #include "entity_renderer.h"
 #include "window_manager.h"
+#include <skybox/skybox_renderer.h>
+#include <terrain_renderer.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <terrain_renderer.h>
 
 #include <algorithm>
 
@@ -16,7 +17,7 @@ Shader MasterRenderer::_terrainShader;
 std::vector<Terrain> MasterRenderer::_terrains;
 std::map<TexturedModel, std::vector<Entity>> MasterRenderer::_entities;
 
-glm::vec3 MasterRenderer::_skyColour = glm::vec3(0.5f, 0.5f, 0.5f);
+glm::vec3 MasterRenderer::_skyColour = glm::vec3(0.544f, 0.62f, 0.69f);
 
 //some constants needed for the projection matrix
 const float FOV = 70.f;
@@ -32,6 +33,7 @@ void MasterRenderer::initialise() {
     createProjectionMatrix();
     Renderer::initialise(_shader, _projectionMatrix);
     TerrainRenderer::initialise(_terrainShader, _projectionMatrix);
+    SkyboxRenderer::initialise(_projectionMatrix);
 }
 
 void MasterRenderer::prepare() {
@@ -57,12 +59,14 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
 
     prepare();
 
+    //render entities
     _shader.use();
     _shader.setVec3("skyColour", _skyColour);
     for(int i = 0; i < MAX_LIGHTS; ++i) {
         auto index = i;
-        //instead of laoding a 4th light, make sure the sun is loaded!
+        //instead of loading a the last light, make sure the "sun" is loaded!
         if(i == MAX_LIGHTS - 1) {
+            //due to the sorting, the sun should be at the end of the list
             index = static_cast<int>(lights.size() - 1);
         }
         _shader.setVec3("lightPosition[" + std::to_string(i) + "]", lights[index].getPosition());
@@ -73,7 +77,9 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
     _shader.setMatrix("viewMatrix", Maths::createViewMatrix(camera));
     Renderer::render(_entities);
     _shader.stop();
+    //----------------
 
+    //render terrain
     _terrainShader.use();
     _terrainShader.setVec3("skyColour", _skyColour);
     for(int i = 0; i < MAX_LIGHTS; ++i) {
@@ -88,6 +94,11 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
     _terrainShader.setMatrix("viewMatrix", Maths::createViewMatrix(camera));
     TerrainRenderer::render(_terrains);
     _terrainShader.stop();
+    //----------------
+
+    //render skybox
+    SkyboxRenderer::render(camera);
+    //----------------
 
     _terrains.clear();
     _entities.clear();

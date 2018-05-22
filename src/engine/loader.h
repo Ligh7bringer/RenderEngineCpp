@@ -15,9 +15,10 @@ public:
                                   std::vector<float> &texCoords);
     static RawModel loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices, std::vector<glm::vec3> &normals,
                               std::vector<glm::vec2> &texCoords);
-    static RawModel loadToVao(std::vector<float> &positions);
+    static RawModel loadToVao(std::vector<float> &positions, int dimensions);
     static void cleanUp();
     static unsigned int loadTexture(const std::string &fileName);
+    static unsigned int loadCubeMap(const std::vector<std::string>& fileNames);
 
 private:
     static std::vector<unsigned int> _vaos;
@@ -26,9 +27,6 @@ private:
 
     static unsigned int createVAO();
     static unsigned int createVBO();
-    static void storeData(unsigned int attNum, std::vector<float> &data, unsigned int coordSize);
-    static void storeDataInVBO(unsigned int attNum, std::vector<glm::vec3> &data);
-    static void storeDataInVBO(unsigned int attNum, std::vector<glm::vec2> &data);
     static void unbindVAO();
     static void bindIndicesBuffer(std::vector<unsigned int> &indices);
 

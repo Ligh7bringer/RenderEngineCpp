@@ -28,7 +28,7 @@ glm::mat4 Maths::createTransformationMatrix(const glm::vec2 &translation, const 
 }
 
 //creates a view matrix so that the camera can be moved
-glm::mat4 Maths::createViewMatrix(Camera &camera) {
+glm::mat4 Maths::createViewMatrix(const Camera &camera) {
     glm::mat4 matrix(1.0f);
 
     matrix = glm::rotate(matrix, glm::radians(camera.getPitch()), {1, 0, 0});
@@ -51,5 +51,11 @@ float Maths::barryCentricInterpolation(const glm::vec3& p1, const glm::vec3& p2,
 
 float Maths::euclideanDistance(const glm::vec3 &lhs, const glm::vec3 &rhs) {
     return glm::length(rhs - lhs);
+}
+
+glm::mat4 Maths::createSkyboxViewMatrix(const Camera &camera) {
+    auto matrix = createViewMatrix(camera);
+    matrix[3] = glm::vec4{0.0, 0.0, 0.0, matrix[3][3]};
+    return matrix;
 }
 

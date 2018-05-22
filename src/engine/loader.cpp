@@ -7,6 +7,7 @@
 
 #include <textures/image.h>
 
+
 const std::string TEX_DIR = "res/textures/";
 
 std::vector<unsigned int> Loader::_vaos;
@@ -29,6 +30,14 @@ RawModel Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned i
     return RawModel(vaoID, static_cast<int>(indices.size()));
 }
 
+//overload of method above
+RawModel Loader::loadToVao(std::vector<float> &positions, int dimensions) {
+    auto vaoID = createVAO();
+    storeData(0, dimensions, positions);
+    unbindVAO();
+    return RawModel(vaoID, static_cast<unsigned int>(positions.size() / dimensions));
+}
+
 //does the same thing as the method above, however vectors of glm vectors can be used instead of floats (used for model loading)
 RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices,
                            std::vector<glm::vec3> &normals, std::vector<glm::vec2> &texCoords) {
@@ -46,54 +55,6 @@ RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsign
     return RawModel(vaoID, static_cast<int>(indices.size()));
 }
 
-void Loader::storeData(unsigned int attNum, std::vector<float> &data, unsigned int coordSize) {
-    //create a vbo
-    auto vboID = createVBO();
-    //store it for later
-    _vbos.push_back(vboID);
-    //bind it so it can be used
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    //store data in the vbo: type of buffer, size, actual data, draw type
-    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing a float array which is exactly what openGL is expecting
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * data.size(), &data.front(), GL_STATIC_DRAW);
-    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
-    glVertexAttribPointer(attNum, coordSize, GL_FLOAT, GL_FALSE, 0, nullptr);
-    //unbind the vbo, 0 unbinds the current one
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void Loader::storeDataInVBO(unsigned int attNum, std::vector<glm::vec3> &data) {
-    //create a vbo
-    auto vboID = createVBO();
-    //store it for later
-    _vbos.push_back(vboID);
-    //bind it so it can be used
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    //store data in the vbo: type of buffer, size, actual data, draw type
-    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing an array which is exactly what openGL is expecting
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * data.size(), &data.front(), GL_STATIC_DRAW);
-    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
-    glVertexAttribPointer(attNum, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    //unbind the vbo, 0 unbinds the current one
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void Loader::storeDataInVBO(unsigned int attNum, std::vector<glm::vec2> &data) {
-    //create a vbo
-    auto vboID = createVBO();
-    //store it for later
-    _vbos.push_back(vboID);
-    //bind it so it can be used
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    //store data in the vbo: type of buffer, size, actual data, draw type
-    //NOTE: &data.front() returns a pointer to the beginning of the vector, so it's like passing an array which is exactly what openGL is expecting
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * data.size(), &data.front(), GL_STATIC_DRAW);
-    //put vbo into the vao: num of attribute list, length of vertex, type of data, distance between vertices, offset from start
-    glVertexAttribPointer(attNum, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    //unbind the vbo, 0 unbinds the current one
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
 unsigned int Loader::createVAO() {
     unsigned int vaoID;
     //create a vao and store its ID in vaoID
@@ -104,36 +65,6 @@ unsigned int Loader::createVAO() {
     glBindVertexArray(vaoID);
 
     return vaoID;
-}
-
-unsigned int Loader::createVBO() {
-    unsigned int vboID;
-    //create a vbo and store its ID in vboID
-    glGenBuffers(1, &vboID);
-
-    return vboID;
-}
-
-void Loader::unbindVAO() {
-    //when 0 is passed, the current vao is unbound
-    glBindVertexArray(0);
-}
-
-void Loader::cleanUp() {
-    //delete all vaos
-    for(auto vao : _vaos) {
-        glDeleteVertexArrays(1, &vao);
-    }
-
-    //delete all vbos
-    for(auto vbo : _vbos) {
-        glDeleteBuffers(1, &vbo);
-    }
-
-    //delete textures
-    for(auto tex : _textures) {
-        glDeleteTextures(1, &tex);
-    }
 }
 
 //use an EBO for more efficient rendering
@@ -183,12 +114,57 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
     return texture;
 }
 
-RawModel Loader::loadToVao(std::vector<float> &positions) {
-    auto vaoID = createVAO();
-    storeData(0, 2, positions);
-    unbindVAO();
-    return RawModel(vaoID, static_cast<unsigned int>(positions.size() / 2));
+unsigned int Loader::loadCubeMap(const std::vector<std::string> &fileNames) {
+    //create texture and store its ID
+    unsigned int texID;
+    glGenTextures(1, &texID);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
+
+    //iterate over the file names
+    for(GLuint i = 0; i < 6; ++i) {
+        //load each image
+        Image img = Image(fileNames[i]);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, img.getWidth(),
+                     img.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getData());
+    }
+
+    //set min and mag filters
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    _textures.push_back(texID);
+    return texID;
 }
 
+unsigned int Loader::createVBO() {
+    unsigned int vboID;
+    //create a vbo and store its ID in vboID
+    glGenBuffers(1, &vboID);
+
+    return vboID;
+}
+
+void Loader::unbindVAO() {
+    //when 0 is passed, the current vao is unbound
+    glBindVertexArray(0);
+}
+
+void Loader::cleanUp() {
+    //delete all vaos
+    for(auto vao : _vaos) {
+        glDeleteVertexArrays(1, &vao);
+    }
+
+    //delete all vbos
+    for(auto vbo : _vbos) {
+        glDeleteBuffers(1, &vbo);
+    }
+
+    //delete textures
+    for(auto tex : _textures) {
+        glDeleteTextures(1, &tex);
+    }
+}
 
 

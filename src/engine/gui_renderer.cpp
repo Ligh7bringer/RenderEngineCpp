@@ -13,7 +13,7 @@ void GuiRenderer::initialise() {
     std::vector<float> positions = {
             -1, 1, -1, -1, 1, 1, 1, -1
     };
-    _model = Loader::loadToVao(positions);
+    _model = Loader::loadToVao(positions, 2);
 }
 
 void GuiRenderer::render(std::vector<GuiTexture> guis) {
