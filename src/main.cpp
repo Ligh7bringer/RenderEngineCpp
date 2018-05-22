@@ -8,12 +8,12 @@
 #include <engine/obj_loader.h>
 #include <entities/light.h>
 #include <engine/master_renderer.h>
-
-// System Headers
-#include <glad/glad.h>
-#include <glm/glm.hpp>
 #include <entities/player.h>
 #include <engine/gui_renderer.h>
+
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+
 
 structlog LOGCFG = {};
 
@@ -35,13 +35,14 @@ int main() {
     rockTex.setShineDamper(1.f);
     rockTex.setReflectivity(0.3f);
 
-    //models
+    //models --
     TexturedModel tree = TexturedModel(OBJLoader::LOAD("pine"), ModelTexture(Loader::loadTexture("pine")));
     TexturedModel rock = TexturedModel(OBJLoader::LOAD("rock2"), rockTex);
     TexturedModel fern = TexturedModel(OBJLoader::LOAD("fern"), ModelTexture(Loader::loadTexture("fern"), true, true, 2));
     TexturedModel grass = TexturedModel(OBJLoader::LOAD("grassModel"), ModelTexture(Loader::loadTexture("grassAtlas"), true, true, 4));
     TexturedModel playerModel = TexturedModel(OBJLoader::LOAD("player"), ModelTexture(Loader::loadTexture("playerTexture")));
-    //--
+    TexturedModel lampModel = TexturedModel(OBJLoader::LOAD("lamp"), ModelTexture(Loader::loadTexture("lamp"), false, true));
+    //-----------
 
     Player player = Player(playerModel, glm::vec3(0.f, 80.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
     Camera cam = Camera(player);
@@ -63,7 +64,7 @@ int main() {
         auto x = randCoord(0, 800);
         auto z = randCoord(0, 800);
         auto y = terrain.getHeightOfTerrain(x, z);
-        auto ent = Entity(tree, glm::vec3(x, y, z), glm::vec3(0.f, randCoord(0, 270), 0.f), 3.f);
+        auto ent = Entity(tree, glm::vec3(x, y, z), glm::vec3(0.f, randCoord(0, 270), 0.f), randCoord(1, 3));
         x = randCoord(0, 800);
         z = randCoord(0, 800);
         y = terrain.getHeightOfTerrain(x, z);
@@ -83,7 +84,28 @@ int main() {
         entities.push_back(ent4);
     }
 
-    Light light = Light(glm::vec3(2000.f, 2000.f, -1000.f), glm::vec3(1.f, 1.f, 1.f));
+    //lights -------------
+
+
+    Light light = Light(glm::vec3(0.f, 1000.f, -7000.f), glm::vec3(0.4f, 0.4f, 0.4f));
+    std::vector<Light> lights{ light };
+
+    auto startPos = glm::vec3(20.f, 12.f, 100.f);
+    auto startColour = glm::vec3(2.f, 0.f, 0.f);
+    for(int i = 0; i < 8; i++) {
+        Light light2 = Light(glm::vec3(startPos.x, terrain.getHeightOfTerrain(startPos.x, startPos.z) + 12.f, startPos.z), startColour, glm::vec3(1.f, 0.01f, 0.002f));
+        lights.push_back(light2);
+        startPos.x += 100.f;
+        startColour += glm::vec3(0.f, 0.5f, 0.2f);
+    }
+    //entities
+    for(size_t i = 1; i < lights.size(); ++i) {
+        auto pos = lights[i].getPosition();
+        pos.y = terrain.getHeightOfTerrain(pos.x, pos.z);
+        Entity lamp = Entity(lampModel, pos, glm::vec3(0, 0, 0), 1.f);
+        entities.push_back(lamp);
+    }
+    //---------------------
 
     MasterRenderer::initialise();
     GuiRenderer::initialise();
@@ -97,6 +119,7 @@ int main() {
         //handle keyboard input
         cam.move();
         player.move(terrain);
+        //LOG(DEBUG) << player.getPosition().x << ", " << player.getPosition().y << ", " << player.getPosition().z;
 
         for(const auto& cube : entities) {
             //process entities
@@ -107,7 +130,7 @@ int main() {
         MasterRenderer::processTerrain(terrain);
 
         //render entities
-        MasterRenderer::render(light, cam);
+        MasterRenderer::render(lights, cam);
         GuiRenderer::render(guis);
 
         //update window

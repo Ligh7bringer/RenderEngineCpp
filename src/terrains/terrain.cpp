@@ -16,8 +16,8 @@ Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack &pack, const Ter
 {}
 
 RawModel Terrain::generateTerrain(const std::string &fileName) {
-    auto img = Loader::loadTextureWithData(fileName);
-    auto VERTEX_COUNT = img.height;
+    auto img = Image(fileName);
+    auto VERTEX_COUNT = img.getHeight();
     _heights.resize(VERTEX_COUNT);
     for (auto& height : _heights)
         height.resize(VERTEX_COUNT);
@@ -129,7 +129,7 @@ float Terrain::getHeightOfTerrain(float worldX, float worldZ) const {
     auto gridX = static_cast<int>(std::floor(terrainX / gridSquareSize));
     auto gridZ = static_cast<int>(std::floor(terrainZ / gridSquareSize));
 
-    if(gridX > _heights.size() - 1 || gridZ > _heights.size() - 1 || gridX < 0 || gridZ < 0) {
+    if(gridX >= _heights.size() - 1 || gridZ >= _heights.size() - 1 || gridX < 0 || gridZ < 0) {
         return 0.f;
     }
 

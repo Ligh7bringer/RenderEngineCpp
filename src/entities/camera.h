@@ -13,11 +13,12 @@ public:
     float getPitch() const;
     float getYaw() const;
     float getRoll() const;
+    const glm::vec3 & getPlayerPosition() const;
 
     void move();
 
 private:
-    glm::vec3 _position = glm::vec3(100.f, 2.f, -45.f);
+    glm::vec3 _position;
     float _pitch;
     float _yaw;
     float _roll;

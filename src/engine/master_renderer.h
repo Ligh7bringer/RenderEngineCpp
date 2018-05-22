@@ -16,7 +16,7 @@ public:
     static void prepare();
     static void initialise();
     static void cleanUp();
-    static void render(Light& light, Camera& camera);
+    static void render(std::vector<Light> &lights, Camera& camera);
     static void processEntity(const Entity& entity);
     static void processTerrain(const Terrain& terrain);
     static void createProjectionMatrix();
@@ -30,6 +30,20 @@ private:
 
     static std::map<TexturedModel, std::vector<Entity>> _entities;
     static std::vector<Terrain> _terrains;
+
+    struct DistanceFunc
+    {
+        explicit DistanceFunc(const Light& _p) : p(_p) {}
+
+        bool operator()(const Light& lhs, const Light& rhs) const
+        {
+            return Maths::euclideanDistance(p.getPosition(), lhs.getPosition()) < Maths::euclideanDistance(p.getPosition(), rhs.getPosition());
+        }
+
+    private:
+        Light p;
+    };
+
 };
 
 

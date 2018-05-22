@@ -1,4 +1,3 @@
-#include <glad/glad.h>
 #include <Log.h>
 #include "loader.h"
 
@@ -21,9 +20,9 @@ RawModel Loader::loadToVAO(std::vector<float> &positions, std::vector<unsigned i
     unsigned int vaoID = createVAO();
     bindIndicesBuffer(indices);
     //store the data, starting from index 0
-    storeData(0, positions, 3);
-    storeData(1, texCoords, 2);
-    storeData(2, normals, 3);
+    storeData(0, 3, positions);
+    storeData(1, 2, texCoords);
+    storeData(2, 3, normals);
     unbindVAO();
 
     //create and return the model
@@ -38,9 +37,9 @@ RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsign
     unsigned int vaoID = createVAO();
     bindIndicesBuffer(indices);
     //store the data, starting from index 0
-    storeDataInVBO(0, positions);
-    storeDataInVBO(1, texCoords);
-    storeDataInVBO(2, normals);
+    storeData(0, 3, positions);
+    storeData(1, 2, texCoords);
+    storeData(2, 3, normals);
     unbindVAO();
 
     //create and return the model
@@ -184,40 +183,9 @@ unsigned int Loader::loadTexture(const std::string &fileName) {
     return texture;
 }
 
-//same as the method above but it stores data about the loaded texture
-Image Loader::loadTextureWithData(const std::string &fileName) {
-    int width, height, nrChannels;
-    string loc = TEX_DIR + fileName + ".png";
-    //load the texture with stbi
-    unsigned char* data = stbi_load(loc.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);
-    unsigned int texture;
-    //generate a texture and store its id
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -1.f);
-    //if the image was loaded successfully
-    if(data) {
-        //NOTE: GL_RGBA is the correct channel for images with an alpha channel
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        //so this line generates lower resolutions of the texture
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        LOG(ERR) << "Texture " << loc << " couldn't be loaded!";
-    }
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    Image image = Image(texture, data, nrChannels, width, height);
-    return image;
-}
-
 RawModel Loader::loadToVao(std::vector<float> &positions) {
     auto vaoID = createVAO();
-    storeData(0, positions, 2);
+    storeData(0, 2, positions);
     unbindVAO();
     return RawModel(vaoID, static_cast<unsigned int>(positions.size() / 2));
 }

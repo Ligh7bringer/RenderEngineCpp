@@ -49,8 +49,7 @@ float Maths::barryCentricInterpolation(const glm::vec3& p1, const glm::vec3& p2,
     return l1 * p1.y + l2 * p2.y + l3 * p3.y;
 }
 
-float Maths::toRadians(float deg) {
-    return static_cast<float>(deg * M_PI / 180.0);
+float Maths::euclideanDistance(const glm::vec3 &lhs, const glm::vec3 &rhs) {
+    return glm::length(rhs - lhs);
 }
-
 
