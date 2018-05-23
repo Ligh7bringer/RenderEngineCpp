@@ -88,7 +88,8 @@ int main() {
 
 
     Light light = Light(glm::vec3(0.f, 1000.f, -7000.f), glm::vec3(0.4f, 0.4f, 0.4f));
-    std::vector<Light> lights{ light };
+    std::vector<Light> lights;
+    lights.push_back(light);
 
     auto startPos = glm::vec3(20.f, 12.f, 100.f);
     auto startColour = glm::vec3(2.f, 0.f, 0.f);

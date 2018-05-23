@@ -97,7 +97,7 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
     //----------------
 
     //render skybox
-    SkyboxRenderer::render(camera);
+    SkyboxRenderer::render(camera, _skyColour);
     //----------------
 
     _terrains.clear();

@@ -161,6 +161,7 @@ private:
 
         //if not, get it
         auto location = glGetUniformLocation(ID, name.c_str());
+
         //store it
         _uniforms.insert(std::make_pair(name, location));
 

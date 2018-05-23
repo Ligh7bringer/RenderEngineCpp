@@ -11,15 +11,21 @@
 class SkyboxRenderer {
 public:
     static void initialise(const glm::mat4& projMat);
-    static void render(const Camera& cam);
+    static void render(const Camera &cam, const glm::vec3 &fogColour);
 
 private:
     static float SIZE;
     static std::vector<float> VERTICES;
     static std::vector<std::string> TEXTURES;
+    static std::vector<std::string> NIGHT_TEXTURES;
     static RawModel _model;
     static unsigned int _texture;
+    static unsigned int _nightTexture;
     static Shader _shader;
+    static float _rotation;
+    static float _timer;
+
+    static void bindTextures();
 };
 
 
