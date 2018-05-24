@@ -13,6 +13,10 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
+#include <utilities/mouse_picker.h>
 
 
 structlog LOGCFG = {};
@@ -44,7 +48,9 @@ int main() {
     TexturedModel lampModel = TexturedModel(OBJLoader::LOAD("lamp"), ModelTexture(Loader::loadTexture("lamp"), false, true));
     //-----------
 
+    std::vector<Entity> entities;
     Player player = Player(playerModel, glm::vec3(0.f, 80.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
+
     Camera cam = Camera(player);
 
     //terrains ----------------------------------------------------------------
@@ -59,34 +65,32 @@ int main() {
     Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap");
     //-------------------------------------------------------------------------
 
-    std::vector<Entity> entities;
+
     for(int i = 0; i < 60; ++i) {
         auto x = randCoord(0, 800);
         auto z = randCoord(0, 800);
         auto y = terrain.getHeightOfTerrain(x, z);
-        auto ent = Entity(tree, glm::vec3(x, y, z), glm::vec3(0.f, randCoord(0, 270), 0.f), randCoord(1, 3));
+        entities.emplace_back(tree, glm::vec3(x, y, z), glm::vec3(0.f, randCoord(0, 270), 0.f), randCoord(1, 3));
         x = randCoord(0, 800);
         z = randCoord(0, 800);
         y = terrain.getHeightOfTerrain(x, z);
-        auto ent2 = Entity(rock, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 3.f);
+        entities.emplace_back(rock, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 3.f);
         x = randCoord(0, 800);
         z = randCoord(0, 800);
         y = terrain.getHeightOfTerrain(x, z);
-        auto ent3 = Entity(fern, rand() % 4, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 0.5f);
+        entities.emplace_back(fern, rand() % 4, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 0.5f);
         x = randCoord(0, 800);
         z = randCoord(0, 800);
         y = terrain.getHeightOfTerrain(x, z);
-        auto ent4 = Entity(grass, rand() % 9, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 3.f);
+        entities.emplace_back(grass, rand() % 9, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 3.f);
 
-        entities.push_back(ent);
-        entities.push_back(ent2);
-        entities.push_back(ent3);
-        entities.push_back(ent4);
+//        entities.push_back(ent);
+//        entities.push_back(ent2);
+//        entities.push_back(ent3);
+//        entities.push_back(ent4);
     }
 
     //lights -------------
-
-
     Light light = Light(glm::vec3(0.f, 1000.f, -7000.f), glm::vec3(0.4f, 0.4f, 0.4f));
     std::vector<Light> lights;
     lights.push_back(light);
@@ -103,8 +107,8 @@ int main() {
     for(size_t i = 1; i < lights.size(); ++i) {
         auto pos = lights[i].getPosition();
         pos.y = terrain.getHeightOfTerrain(pos.x, pos.z);
-        Entity lamp = Entity(lampModel, pos, glm::vec3(0, 0, 0), 1.f);
-        entities.push_back(lamp);
+        entities.emplace_back(lampModel, pos, glm::vec3(0, 0, 0), 1.f);
+        //entities.push_back(lamp);
     }
     //---------------------
 
@@ -115,29 +119,23 @@ int main() {
     GuiTexture gui = GuiTexture(Loader::loadTexture("health"), glm::vec2(-0.85f, 0.9f), glm::vec2(0.15f, 0.25f));
     guis.push_back(gui);
 
+    MousePicker mousePicker = MousePicker(cam, MasterRenderer::get_projectionMatrix(), terrain);
+    Entity rayTest = Entity(lampModel, glm::vec3(0, 20.f, 0), glm::vec3(0, 0, 0), 1.f);
+
     // Rendering Loop
     while (WindowManager::shouldClose() == 0) {
         //handle keyboard input
         cam.move();
         player.move(terrain);
-        //LOG(DEBUG) << player.getPosition().x << ", " << player.getPosition().y << ", " << player.getPosition().z;
 
-        for(const auto& cube : entities) {
-            //process entities
-            MasterRenderer::processEntity(cube);
-        }
+        MasterRenderer::renderScene(entities, terrain, lights, cam, player);
 
-        MasterRenderer::processEntity(player);
-        MasterRenderer::processTerrain(terrain);
-
-        //render entities
-        MasterRenderer::render(lights, cam);
         GuiRenderer::render(guis);
 
         //update window
         WindowManager::updateWindow();
         //show fps
-        WindowManager::showUPS();
+        WindowManager::showFPS();
     }
 
     MasterRenderer::cleanUp();

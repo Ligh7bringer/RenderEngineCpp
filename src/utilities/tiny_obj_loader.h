@@ -46,9 +46,9 @@ THE SOFTWARE.
 #ifndef TINY_OBJ_LOADER_H_
 #define TINY_OBJ_LOADER_H_
 
-#include "../../../../../../usr/include/c++/8.1.0/map"
-#include "../../../../../../usr/include/c++/8.1.0/string"
-#include "../../../../../../usr/include/c++/8.1.0/vector"
+#include <map>
+#include <string>
+#include <vector>
 
 namespace tinyobj {
 

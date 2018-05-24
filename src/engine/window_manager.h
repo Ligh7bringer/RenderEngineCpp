@@ -14,13 +14,15 @@ public:
 
     static glm::vec2 getWindowSize();
     static GLFWwindow* getWindow();
-    static void showUPS();
+    static void showFPS();
 
     static double getDeltaTime();
     static const glm::vec2 &getMouseWheelDelta();
     static const glm::vec2 &getCursorDelta();
     static const glm::vec2 &getMouseWheel();
     static void resetMouseWheel();
+
+    static const glm::vec2 &getCursorPosition();
 
 protected:
     static GLFWwindow* _window;

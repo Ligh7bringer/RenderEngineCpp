@@ -5,8 +5,8 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include "../../../../../../usr/include/c++/8.1.0/iostream"
-#include "../../../../../../usr/include/c++/8.1.0/string"
+#include <iostream>
+#include <string>
 
 using namespace std;
 

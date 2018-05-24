@@ -65,7 +65,7 @@ void WindowManager::updateWindow() {
     glfwSwapBuffers(_window);
     glfwPollEvents();
 
-    //calclate delta time
+    //calculate delta time
     auto now = glfwGetTime();
     _deltaTime = now - _lastFrameTime;
     _lastFrameTime = now;
@@ -97,7 +97,7 @@ glm::vec2 WindowManager::getWindowSize() {
 }
 
 //calculates and displays fps
-void WindowManager::showUPS() {
+void WindowManager::showFPS() {
         // Static variables are only initialized once ever
         // Used for the size of the average array
         const static int SIZE = 500;
@@ -181,6 +181,10 @@ const glm::vec2 &WindowManager::getMouseWheel() {
 
 void WindowManager::resetMouseWheel() {
     _scrollOld = { 0, 0 };
+}
+
+const glm::vec2 &WindowManager::getCursorPosition() {
+    return _cursorPos;
 }
 
 

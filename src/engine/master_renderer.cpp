@@ -50,6 +50,20 @@ void MasterRenderer::cleanUp() {
     _terrainShader.cleanUp();
 }
 
+void MasterRenderer::renderScene(const std::vector<Entity> &entities, const Terrain &terrain, vector<Light> &lights,
+                                 Camera &cam, const Entity &player) {
+
+    processTerrain(terrain);
+
+    for(const auto& ent : entities) {
+        processEntity(ent);
+    }
+
+    processEntity(player);
+
+    render(lights, cam);
+}
+
 void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
     //need this temporary light so that the vector can be sorted according to it
     Light tmp = Light(camera.getPlayerPosition(), glm::vec3(0, 0, 0));
@@ -57,6 +71,7 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
     //obviously not ideal as it's being sorted every frame
     std::sort(std::begin(lights), std::end(lights), DistanceFunc(tmp));
 
+    //prepare for rendering
     prepare();
 
     //render entities
@@ -105,8 +120,7 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
 }
 
 void MasterRenderer::processEntity(const Entity &entity) {
-    auto entModel = entity.getModel();
-    _entities[entModel].push_back(entity);
+    _entities[entity.getModel()].push_back(entity);
 }
 
 //creates the projection matrix
@@ -129,3 +143,9 @@ void MasterRenderer::enableCulling() {
 void MasterRenderer::disableCulling() {
     glDisable(GL_CULL_FACE);
 }
+
+const glm::mat4 &MasterRenderer::get_projectionMatrix() {
+    return _projectionMatrix;
+}
+
+

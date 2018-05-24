@@ -17,11 +17,15 @@ public:
     static void initialise();
     static void cleanUp();
     static void render(std::vector<Light> &lights, Camera& camera);
+    static void renderScene(const std::vector<Entity> &entities, const Terrain &terrain, vector<Light> &lights,
+                                Camera &cam, const Entity &player);
     static void processEntity(const Entity& entity);
     static void processTerrain(const Terrain& terrain);
     static void createProjectionMatrix();
     static void enableCulling();
     static void disableCulling();
+
+    static const glm::mat4 &get_projectionMatrix();
 
 private:
     static glm::mat4 _projectionMatrix;
