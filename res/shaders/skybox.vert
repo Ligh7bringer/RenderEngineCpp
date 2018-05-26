@@ -9,5 +9,6 @@ uniform mat4 viewMatrix;
 
 void main(void) {
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
+    gl_ClipDistance[0] = 1;
     texCoords = position;
 }

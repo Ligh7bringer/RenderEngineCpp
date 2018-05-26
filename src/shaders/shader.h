@@ -111,6 +111,10 @@ public:
         glUniform1f(getUniformLoc(name), value);
     }
 
+    void setVec4(const std::string &name, const glm::vec4 &value) {
+        glUniform4fv(getUniformLoc(name), 1, glm::value_ptr(value));
+    }
+
     void setVec3(const std::string &name, const glm::vec3 &value) {
         glUniform3fv(getUniformLoc(name), 1, glm::value_ptr(value));
     }

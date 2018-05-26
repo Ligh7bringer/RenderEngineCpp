@@ -10,14 +10,17 @@
 #include <engine/master_renderer.h>
 #include <entities/player.h>
 #include <engine/gui_renderer.h>
+#include <utilities/mouse_picker.h>
+#include <utilities/gl_error.h>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
-#include <utilities/mouse_picker.h>
-
+#include <water/water_tile.h>
+#include <water/water_renderer.h>
+#include <water/water_frame_buffers.h>
 
 structlog LOGCFG = {};
 
@@ -62,11 +65,11 @@ int main() {
     TerrainTexture blendMap = TerrainTexture(Loader::loadTexture("blendMap"));
     TerrainTexturePack pack = TerrainTexturePack(bgTex, rTex, gTex, bTex);
     /*---------------------------------------------------*/
-    Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap");
+    Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap3");
     //-------------------------------------------------------------------------
 
 
-    for(int i = 0; i < 60; ++i) {
+    for(int i = 0; i < 40; ++i) {
         auto x = randCoord(0, 800);
         auto z = randCoord(0, 800);
         auto y = terrain.getHeightOfTerrain(x, z);
@@ -83,15 +86,10 @@ int main() {
         z = randCoord(0, 800);
         y = terrain.getHeightOfTerrain(x, z);
         entities.emplace_back(grass, rand() % 9, glm::vec3(x, y, z), glm::vec3(0.f, 0.f, 0.f), 3.f);
-
-//        entities.push_back(ent);
-//        entities.push_back(ent2);
-//        entities.push_back(ent3);
-//        entities.push_back(ent4);
     }
 
     //lights -------------
-    Light light = Light(glm::vec3(0.f, 1000.f, -7000.f), glm::vec3(0.4f, 0.4f, 0.4f));
+    Light light = Light(glm::vec3(0.f, 1000.f, 800.f), glm::vec3(1.f, 1.f, 1.f));
     std::vector<Light> lights;
     lights.push_back(light);
 
@@ -108,7 +106,6 @@ int main() {
         auto pos = lights[i].getPosition();
         pos.y = terrain.getHeightOfTerrain(pos.x, pos.z);
         entities.emplace_back(lampModel, pos, glm::vec3(0, 0, 0), 1.f);
-        //entities.push_back(lamp);
     }
     //---------------------
 
@@ -119,8 +116,13 @@ int main() {
     GuiTexture gui = GuiTexture(Loader::loadTexture("health"), glm::vec2(-0.85f, 0.9f), glm::vec2(0.15f, 0.25f));
     guis.push_back(gui);
 
-    MousePicker mousePicker = MousePicker(cam, MasterRenderer::get_projectionMatrix(), terrain);
-    Entity rayTest = Entity(lampModel, glm::vec3(0, 20.f, 0), glm::vec3(0, 0, 0), 1.f);
+    Shader waterShader = Shader("res/shaders/water.vert", "res/shaders/water.frag");
+    WaterTile waterTile = WaterTile(120.f, 160.f, -10.f);
+    std::vector<WaterTile> water;
+    water.push_back(waterTile);
+
+    WaterFrameBuffers fbos = WaterFrameBuffers();
+    WaterRenderer waterRenderer = WaterRenderer(waterShader, MasterRenderer::get_projectionMatrix(), fbos);
 
     // Rendering Loop
     while (WindowManager::shouldClose() == 0) {
@@ -128,9 +130,34 @@ int main() {
         cam.move();
         player.move(terrain);
 
-        MasterRenderer::renderScene(entities, terrain, lights, cam, player);
+        glEnable(GL_CLIP_DISTANCE0);
 
+        check_gl_error();
+        {
+            //reflection
+            fbos.bindReflectionFrameBuffer();
+            auto reflectionCam = cam;
+            float distance = 2.f * (cam.getPosition().y - waterTile.getHeight());
+            auto position = reflectionCam.getPosition() - glm::vec3(0, distance, 0);
+            reflectionCam.set_position(position);
+            reflectionCam.invertPitch();
+            MasterRenderer::renderScene(entities, terrain, lights, reflectionCam, player, glm::vec4{0, 1.f, 0, -waterTile.getHeight() + 1.f});
+            fbos.unbindCurrentFrameBuffer();
+
+            //refraction
+            fbos.bindRefractionFrameBuffer();
+            MasterRenderer::renderScene(entities, terrain, lights, cam, player, glm::vec4{0, -1.f, 0, waterTile.getHeight()});
+            fbos.unbindCurrentFrameBuffer();
+        }
+
+        check_gl_error();
+
+        glDisable(GL_CLIP_DISTANCE0);
+        MasterRenderer::renderScene(entities, terrain, lights, cam, player, glm::vec4{0, 1.f, 0, 10000.f});
+        waterRenderer.render(water, cam, light);
         GuiRenderer::render(guis);
+
+        check_gl_error();
 
         //update window
         WindowManager::updateWindow();

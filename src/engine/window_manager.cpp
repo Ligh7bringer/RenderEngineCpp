@@ -39,8 +39,8 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     LOG(INFO) << "GL Version: " << glGetString(GL_VERSION);
     LOG(INFO) << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-    //turn vsync off
-    //glfwSwapInterval(0);
+    //vsync should be on I guess as turning it off causes a lot of problems
+    glfwSwapInterval(1);
 
     //set callback functions so we are notified of mouse wheel movement and cursor movement
     glfwSetScrollCallback(_window, scroll_callback);

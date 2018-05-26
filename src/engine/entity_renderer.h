@@ -11,7 +11,6 @@
 
 class Renderer {
 public:
-    //Renderer(Shader &shader);
     static void initialise(Shader &shader, const glm::mat4 &projMat);
     static void render(const std::map<TexturedModel, std::vector<Entity>>& entities);
 

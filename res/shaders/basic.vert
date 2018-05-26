@@ -21,10 +21,15 @@ uniform vec2 offset;
 //fog constants
 const float density = 0.0035;
 const float gradient = 5.0;
+//clipping plane
+uniform vec4 plane;
 
 void main() {
     //calculate world position
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+
+    gl_ClipDistance[0] = dot(worldPosition, plane);
+
     vec4 posRelativeToCam = viewMatrix * worldPosition;
     //set gl_Position to the correct value
     gl_Position = projectionMatrix * posRelativeToCam;

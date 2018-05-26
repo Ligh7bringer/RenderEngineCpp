@@ -16,9 +16,9 @@ public:
     static void prepare();
     static void initialise();
     static void cleanUp();
-    static void render(std::vector<Light> &lights, Camera& camera);
+    static void render(std::vector<Light> &lights, Camera &camera, const glm::vec4 &clipPlane);
     static void renderScene(const std::vector<Entity> &entities, const Terrain &terrain, vector<Light> &lights,
-                                Camera &cam, const Entity &player);
+                                Camera &cam, const Entity &player, const glm::vec4 &clipPlane);
     static void processEntity(const Entity& entity);
     static void processTerrain(const Terrain& terrain);
     static void createProjectionMatrix();

@@ -39,8 +39,6 @@ void TerrainRenderer::prepareTerrain(const Terrain &terrain) {
     bindTextures(terrain);
     _shader.setFloat("shineDamper", 1.f);
     _shader.setFloat("reflectivity", 0.f);
-
-
 }
 
 void TerrainRenderer::bindTextures(const Terrain &terrain) {

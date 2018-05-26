@@ -7,7 +7,7 @@
 #include <cmath>
 #include <Log.h>
 
-Camera::Camera(const Player &pl) : _position(glm::vec3(100.f, 2.f, -45.f)), _pitch(0), _yaw(0),
+Camera::Camera(const Player &pl) : _position(glm::vec3(100.f, 2.f, -45.f)), _pitch(8.f), _yaw(0),
                                    _roll(0), _distanceFromPlayer(25.f),_angleAroundPlayer(0), _player(pl) {}
 
 //handle keyboard input and change the camera's position accordingly
@@ -79,6 +79,18 @@ float Camera::getRoll() const {
 
 const glm::vec3 & Camera::getPlayerPosition() const {
     return _player.getPosition();
+}
+
+void Camera::invertPitch() {
+    _pitch = -_pitch;
+}
+
+void Camera::increasePosition(const glm::vec3 &value) {
+    _position += value;
+}
+
+void Camera::set_position(const glm::vec3 &_position) {
+    Camera::_position = _position;
 }
 
 

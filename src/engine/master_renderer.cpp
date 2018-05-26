@@ -21,7 +21,7 @@ glm::vec3 MasterRenderer::_skyColour = glm::vec3(0.544f, 0.62f, 0.69f);
 
 //some constants needed for the projection matrix
 const float FOV = 70.f;
-const float NEAR_PLANE = 0.1f;
+const float NEAR_PLANE = 1.f;
 const float FAR_PLANE = 1000.f;
 const int MAX_LIGHTS = 4;
 
@@ -51,7 +51,7 @@ void MasterRenderer::cleanUp() {
 }
 
 void MasterRenderer::renderScene(const std::vector<Entity> &entities, const Terrain &terrain, vector<Light> &lights,
-                                 Camera &cam, const Entity &player) {
+                                 Camera &cam, const Entity &player, const glm::vec4 &clipPlane) {
 
     processTerrain(terrain);
 
@@ -61,10 +61,10 @@ void MasterRenderer::renderScene(const std::vector<Entity> &entities, const Terr
 
     processEntity(player);
 
-    render(lights, cam);
+    render(lights, cam, clipPlane);
 }
 
-void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
+void MasterRenderer::render(std::vector<Light> &lights, Camera &camera, const glm::vec4 &clipPlane) {
     //need this temporary light so that the vector can be sorted according to it
     Light tmp = Light(camera.getPlayerPosition(), glm::vec3(0, 0, 0));
     //sort the vector so that only the 4 closest lights are loaded to the shader
@@ -76,6 +76,7 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
 
     //render entities
     _shader.use();
+    _shader.setVec4("plane", clipPlane);
     _shader.setVec3("skyColour", _skyColour);
     for(int i = 0; i < MAX_LIGHTS; ++i) {
         auto index = i;
@@ -96,6 +97,7 @@ void MasterRenderer::render(std::vector<Light> &lights, Camera &camera) {
 
     //render terrain
     _terrainShader.use();
+    _terrainShader.setVec4("plane", clipPlane);
     _terrainShader.setVec3("skyColour", _skyColour);
     for(int i = 0; i < MAX_LIGHTS; ++i) {
         auto index = i;

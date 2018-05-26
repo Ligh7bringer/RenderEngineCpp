@@ -99,18 +99,18 @@ void SkyboxRenderer::render(const Camera &cam, const glm::vec3 &fogColour) {
 }
 
 void SkyboxRenderer::bindTextures() {
-    _timer += WindowManager::getDeltaTime() * 1000.f;
-    auto blendFactor = (std::sin(glm::radians(_timer / 100.f)) + 1.f) / 2.f;
+    //_timer += WindowManager::getDeltaTime() * 1000.f;
+    //auto blendFactor = (std::sin(glm::radians(_timer / 100.f)) + 1.f) / 2.f;
 
     //bind day time textures to texture unit 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _texture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _nightTexture);
 
     //bind night time textures to texture unit 1
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _nightTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _texture);
 
-    _shader.setFloat("blendFactor", blendFactor);
+    _shader.setFloat("blendFactor", 1);
 }
 
 

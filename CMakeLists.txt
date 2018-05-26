@@ -38,6 +38,7 @@ include_directories(src/
                     src/terrains/
                     src/guis/
                     src/skybox/
+                    src/water/
                     lib/glad/include/
                     lib/glfw/include/
                     lib/glm/
@@ -55,7 +56,8 @@ file(GLOB PROJECT_HEADERS   src/*.h
                             src/entities/*.h
                             src/terrains/*.h
                             src/guis/*.h
-                            src/skybox/*.h)
+                            src/skybox/*.h
+                            src/water/*.h)
 #implementation files
 file(GLOB PROJECT_SOURCES   src/*.cpp
                             src/engine/*.cpp
@@ -66,7 +68,8 @@ file(GLOB PROJECT_SOURCES   src/*.cpp
                             src/entities/*.cpp
                             src/terrains/*.cpp
                             src/guis/*.cpp
-                            src/skybox/*.cpp)
+                            src/skybox/*.cpp
+                            src/water/*.cpp)
 #shaders
 file(GLOB PROJECT_SHADERS   src/Shaders/*.comp
                             src/Shaders/*.frag

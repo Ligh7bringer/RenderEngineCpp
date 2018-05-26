@@ -20,6 +20,8 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColour;
 
+const float ambient = 0.1;
+
 void main() {
     //get colour of blend map to find out how much of each texture should be rendered
     vec4 blendMapColour = texture(blendMap, pass_texCoords);
@@ -67,9 +69,9 @@ void main() {
         totalSpecular = totalSpecular + (dampedFactor * reflectivity * lightColour[i]) / attFactor;
     }
 
-    totalSpecular = max(totalSpecular, 0.0);
+    //totalSpecular = max(totalSpecular, 0.1);
 
     //calculate the colour of the pixel
-    out_Colour = vec4(totalDiffuse, 1.0) * totalCol + vec4(totalSpecular, 1.0);
+    out_Colour = (ambient + vec4(totalDiffuse, 1.0)) * totalCol + vec4(totalSpecular, 1.0);
     out_Colour = mix(vec4(skyColour, 1.0), out_Colour, visibility);
 }

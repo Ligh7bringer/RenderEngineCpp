@@ -14,6 +14,10 @@ public:
     float getYaw() const;
     float getRoll() const;
     const glm::vec3 & getPlayerPosition() const;
+    void invertPitch();
+    void increasePosition(const glm::vec3& value);
+
+    void set_position(const glm::vec3 &_position);
 
     void move();
 
