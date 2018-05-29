@@ -8,11 +8,13 @@
 #include <vector>
 #include <cmath>
 
+const std::string RES_DIR = "res/textures/maps/";
+
 WaterRenderer::WaterRenderer(const Shader &shader, const glm::mat4 &projMat, const WaterFrameBuffers &fbos) :
         _shader(shader), _fbos(fbos) {
 
-    auto dudvImg = Image(DUDV_MAP);
-    auto nmapImg = Image(NORMAL_MAP);
+    auto dudvImg = Image(RES_DIR + DUDV_MAP + ".png");
+    auto nmapImg = Image(RES_DIR + NORMAL_MAP + ".png");
     _dudvTexture = dudvImg.getID();
     _normalMapTexture = nmapImg.getID();
     initVertices();

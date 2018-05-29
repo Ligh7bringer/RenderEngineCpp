@@ -9,6 +9,8 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 const std::string MODEL_DIR = "res/models/";
 
@@ -128,13 +130,13 @@ std::vector<std::string> OBJLoader::split(const string &phrase, const std::strin
 }
 
 //faster obj model loading using tinyobj!
-RawModel OBJLoader::LOAD(const std::string &fileName) {
+RawModel OBJLoader::load(const std::string &fileName, bool computeTangents) {
     std::string path = MODEL_DIR + fileName + ".obj";
-//    std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
     std::vector<glm::vec3> positions;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> texCoords;
+    std::vector<glm::vec3> tangents;
 
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -147,25 +149,59 @@ RawModel OBJLoader::LOAD(const std::string &fileName) {
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
+            //positions
             positions.emplace_back(
                     attrib.vertices[3 * index.vertex_index + 0],
                     attrib.vertices[3 * index.vertex_index + 1],
                     attrib.vertices[3 * index.vertex_index + 2]
             );
 
+            //texture coordinates
             texCoords.emplace_back(
                     attrib.texcoords[2 * index.texcoord_index + 0],
                     1.f - attrib.texcoords[2 * index.texcoord_index + 1]
             );
 
+            //normals
             normals.emplace_back(
                     attrib.normals[3 * index.normal_index + 0],
                     attrib.normals[3 * index.normal_index + 1],
                     attrib.normals[3 * index.normal_index + 2]
             );
 
-            indices.push_back(indices.size());
+            indices.push_back(static_cast<unsigned int &&>(indices.size()));
         }
+    }
+
+    if(computeTangents) {
+        // tangents and bitangents
+        tangents.assign(positions.size(), glm::vec3(0, 0, 0));
+        for (size_t v = 0; v < indices.size(); v += 3) {
+            auto v0 = positions[indices[v + 0]];
+            auto v1 = positions[indices[v + 1]];
+            auto v2 = positions[indices[v + 2]];
+            auto uv0 = texCoords[indices[v + 0]];
+            auto uv1 = texCoords[indices[v + 1]];
+            auto uv2 = texCoords[indices[v + 2]];
+
+            glm::vec3 deltaPos1 = glm::vec3(v1 - v0);
+            glm::vec3 deltaPos2 = glm::vec3(v2 - v0);
+            glm::vec2 deltaUV1 = uv1 - uv0;
+            glm::vec2 deltaUV2 = uv2 - uv0;
+
+            float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+
+            glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+
+            tangent = glm::normalize(tangent);
+
+            tangents[indices[v + 0]] += tangent;
+            tangents[indices[v + 1]] += tangent;
+            tangents[indices[v + 2]] += tangent;
+        }
+
+        LOG(DEBUG) << "tangents";
+        return Loader::loadToVao(positions, indices, normals, texCoords, tangents);
     }
 
     return Loader::loadToVao(positions, indices, normals, texCoords);

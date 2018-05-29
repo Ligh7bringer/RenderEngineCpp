@@ -16,8 +16,9 @@ Terrain::Terrain(int gridX, int gridZ, const TerrainTexturePack &pack, const Ter
 {}
 
 RawModel Terrain::generateTerrain(const std::string &fileName) {
-    auto img = Image(fileName);
+    auto img = Image("res/textures/maps/" + fileName + ".png");
     auto VERTEX_COUNT = img.getHeight();
+
     _heights.resize(VERTEX_COUNT);
     for (auto& height : _heights)
         height.resize(VERTEX_COUNT);

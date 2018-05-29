@@ -43,15 +43,33 @@ int main() {
     rockTex.setReflectivity(0.3f);
 
     //models --
-    TexturedModel tree = TexturedModel(OBJLoader::LOAD("pine"), ModelTexture(Loader::loadTexture("pine")));
-    TexturedModel rock = TexturedModel(OBJLoader::LOAD("rock2"), rockTex);
-    TexturedModel fern = TexturedModel(OBJLoader::LOAD("fern"), ModelTexture(Loader::loadTexture("fern"), true, true, 2));
-    TexturedModel grass = TexturedModel(OBJLoader::LOAD("grassModel"), ModelTexture(Loader::loadTexture("grassAtlas"), true, true, 4));
-    TexturedModel playerModel = TexturedModel(OBJLoader::LOAD("player"), ModelTexture(Loader::loadTexture("playerTexture")));
-    TexturedModel lampModel = TexturedModel(OBJLoader::LOAD("lamp"), ModelTexture(Loader::loadTexture("lamp"), false, true));
+    TexturedModel tree = TexturedModel(OBJLoader::load("pine"), ModelTexture(Loader::loadTexture("pine")));
+    TexturedModel rock = TexturedModel(OBJLoader::load("rock2"), rockTex);
+    TexturedModel fern = TexturedModel(OBJLoader::load("fern"), ModelTexture(Loader::loadTexture("fern"), true, true, 2));
+    TexturedModel grass = TexturedModel(OBJLoader::load("grassModel"), ModelTexture(Loader::loadTexture("grassAtlas"), true, true, 4));
+    TexturedModel playerModel = TexturedModel(OBJLoader::load("player"), ModelTexture(Loader::loadTexture("playerTexture")));
+    TexturedModel lampModel = TexturedModel(OBJLoader::load("lamp"), ModelTexture(Loader::loadTexture("lamp"), false, true));
     //-----------
 
     std::vector<Entity> entities;
+
+    std::vector<Entity> normalMapEnts;
+    auto barrelTex = ModelTexture(Loader::loadTexture("barrel"));
+    barrelTex.setShineDamper(5.f);
+    barrelTex.setReflectivity(0.5f);
+    barrelTex.setNormalMap(Loader::loadTexture("barrelNormal"));
+    auto boulderTex = ModelTexture(Loader::loadTexture("boulder"));
+    boulderTex.setShineDamper(5.f);
+    boulderTex.setReflectivity(0.5f);
+    auto crateTex = ModelTexture(Loader::loadTexture("crate"));
+    crateTex.setShineDamper(5.f);
+    crateTex.setReflectivity(0.5f);
+    crateTex.setNormalMap(Loader::loadTexture("crateNormal"));
+    boulderTex.setNormalMap(Loader::loadTexture("boulderNormal"));
+    normalMapEnts.emplace_back(TexturedModel(OBJLoader::load("barrel", true), barrelTex), glm::vec3(120.f, 0.f, 80.f), glm::vec3(0.f, 180.f, 0.f), 1.f);
+    normalMapEnts.emplace_back(TexturedModel(OBJLoader::load("boulder", true), boulderTex), glm::vec3(120.f, 0.f, 110.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
+    normalMapEnts.emplace_back(TexturedModel(OBJLoader::load("crate", true), crateTex), glm::vec3(120.f, 0.f, 140.f), glm::vec3(0.f, 0.f, 0.f), 0.04f);
+
     Player player = Player(playerModel, glm::vec3(0.f, 80.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 0.4f);
 
     Camera cam = Camera(player);
@@ -67,7 +85,6 @@ int main() {
     /*---------------------------------------------------*/
     Terrain terrain = Terrain(0, -1, pack, blendMap, "heightmap3");
     //-------------------------------------------------------------------------
-
 
     for(int i = 0; i < 40; ++i) {
         auto x = randCoord(0, 800);
@@ -89,17 +106,16 @@ int main() {
     }
 
     //lights -------------
-    Light light = Light(glm::vec3(0.f, 1000.f, 800.f), glm::vec3(1.f, 1.f, 1.f));
-    std::vector<Light> lights;
-    lights.push_back(light);
+    Light light = Light(glm::vec3(10000.f, 10000.f, 10000.f), glm::vec3(1.3f, 1.3f, 1.3f));
+    std::vector<Light> lights {light};
 
-    auto startPos = glm::vec3(20.f, 12.f, 100.f);
+    auto startPos = glm::vec3(200.f, 12.f, 200.f);
     auto startColour = glm::vec3(2.f, 0.f, 0.f);
-    for(int i = 0; i < 8; i++) {
+    for(int i = 0; i < 3; i++) {
         Light light2 = Light(glm::vec3(startPos.x, terrain.getHeightOfTerrain(startPos.x, startPos.z) + 12.f, startPos.z), startColour, glm::vec3(1.f, 0.01f, 0.002f));
         lights.push_back(light2);
-        startPos.x += 100.f;
-        startColour += glm::vec3(0.f, 0.5f, 0.2f);
+        startPos.z += 100.f;
+        startColour += glm::vec3(0.f, 0.5f, 0.05f);
     }
     //entities
     for(size_t i = 1; i < lights.size(); ++i) {
@@ -130,9 +146,10 @@ int main() {
         cam.move();
         player.move(terrain);
 
-        glEnable(GL_CLIP_DISTANCE0);
-
         check_gl_error();
+
+        glEnable(GL_CLIP_DISTANCE0);
+        //render to fbos
         {
             //reflection
             fbos.bindReflectionFrameBuffer();
@@ -141,19 +158,21 @@ int main() {
             auto position = reflectionCam.getPosition() - glm::vec3(0, distance, 0);
             reflectionCam.set_position(position);
             reflectionCam.invertPitch();
-            MasterRenderer::renderScene(entities, terrain, lights, reflectionCam, player, glm::vec4{0, 1.f, 0, -waterTile.getHeight() + 1.f});
+            MasterRenderer::renderScene(entities, normalMapEnts, terrain, lights, reflectionCam, player,
+                                        glm::vec4{0, 1.f, 0, -waterTile.getHeight() + 1.f});
             fbos.unbindCurrentFrameBuffer();
 
             //refraction
             fbos.bindRefractionFrameBuffer();
-            MasterRenderer::renderScene(entities, terrain, lights, cam, player, glm::vec4{0, -1.f, 0, waterTile.getHeight()});
+            MasterRenderer::renderScene(entities, normalMapEnts, terrain, lights, cam, player,
+                                        glm::vec4{0, -1.f, 0, waterTile.getHeight()});
             fbos.unbindCurrentFrameBuffer();
         }
 
-        check_gl_error();
-
+        //render scene
         glDisable(GL_CLIP_DISTANCE0);
-        MasterRenderer::renderScene(entities, terrain, lights, cam, player, glm::vec4{0, 1.f, 0, 10000.f});
+        MasterRenderer::renderScene(entities, normalMapEnts, terrain, lights, cam, player,
+                                    glm::vec4{0, 1.f, 0, 10000.f});
         waterRenderer.render(water, cam, light);
         GuiRenderer::render(guis);
 

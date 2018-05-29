@@ -36,7 +36,7 @@ void Renderer::render(const std::map<TexturedModel, std::vector<Entity>> &entiti
 }
 
 void Renderer::prepareTexturedModel(const TexturedModel &model) {
-    auto rawModel = model.getModel();
+    const auto& rawModel = model.getModel();
     //bind the texturedModel's vao
     glBindVertexArray(rawModel.get_vaoID());
     //activate the attribute list

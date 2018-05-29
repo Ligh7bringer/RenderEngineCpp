@@ -4,6 +4,7 @@
 
 #include <engine/window_manager.h>
 #include <utilities/gl_error.h>
+#include <utilities/Log.h>
 
 WaterFrameBuffers::WaterFrameBuffers() {
     initReflectionBuffer();

@@ -38,7 +38,6 @@ RawModel Loader::loadToVao(std::vector<float> &positions, int dimensions) {
     return RawModel(vaoID, static_cast<unsigned int>(positions.size() / dimensions));
 }
 
-//does the same thing as the method above, however vectors of glm vectors can be used instead of floats (used for model loading)
 RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices,
                            std::vector<glm::vec3> &normals, std::vector<glm::vec2> &texCoords) {
 
@@ -49,6 +48,25 @@ RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsign
     storeData(0, 3, positions);
     storeData(1, 2, texCoords);
     storeData(2, 3, normals);
+    unbindVAO();
+
+    //create and return the model
+    return RawModel(vaoID, static_cast<int>(indices.size()));
+}
+
+//does the same thing as the method above, however vectors of glm vectors can be used instead of floats (used for model loading)
+RawModel Loader::loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices,
+                           std::vector<glm::vec3> &normals, std::vector<glm::vec2> &texCoords,
+                           std::vector<glm::vec3> &tangents) {
+
+    //create a vertex array
+    unsigned int vaoID = createVAO();
+    bindIndicesBuffer(indices);
+    //store the data, starting from index 0
+    storeData(0, 3, positions);
+    storeData(1, 2, texCoords);
+    storeData(2, 3, normals);
+    storeData(3, 3, tangents);
     unbindVAO();
 
     //create and return the model
@@ -124,7 +142,7 @@ unsigned int Loader::loadCubeMap(const std::vector<std::string> &fileNames) {
     //iterate over the file names
     for(GLuint i = 0; i < 6; ++i) {
         //load each image
-        Image img = Image(fileNames[i]);
+        Image img = Image("res/textures/skybox/" + fileNames[i] + ".png");
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, img.getWidth(),
                      img.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.getData());
     }
@@ -166,5 +184,7 @@ void Loader::cleanUp() {
         glDeleteTextures(1, &tex);
     }
 }
+
+
 
 

@@ -6,12 +6,13 @@
 #include "water_tile.h"
 #include "water_frame_buffers.h"
 #include <entities/camera.h>
+#include <entities/light.h>
+#include <utilities/Log.h>
 
 #include <glm/glm.hpp>
 
 #include <vector>
 #include <string>
-#include <entities/light.h>
 
 class WaterRenderer {
 public:
@@ -19,7 +20,7 @@ public:
 
     void render(const std::vector<WaterTile> &water, const Camera &camera, const Light &sun);
 
-
+    ~WaterRenderer() = default;
 private:
     const std::string DUDV_MAP = "waterDUDV";
     const std::string NORMAL_MAP = "waterNormalMap";
@@ -28,7 +29,7 @@ private:
     RawModel _quad;
     Shader _shader;
     std::vector<float> _vertices;
-    WaterFrameBuffers _fbos;
+    const WaterFrameBuffers& _fbos;
     unsigned int _dudvTexture;
     unsigned int _normalMapTexture;
     float _moveFactor = 0.f;

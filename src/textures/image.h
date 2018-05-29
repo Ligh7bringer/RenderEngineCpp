@@ -11,7 +11,7 @@
 class Image {
 public:
     explicit Image(const std::string& name)  {
-		auto path = RES_DIR + name + ".png";
+		auto path = name;
 		int width, height, nrChannels;
 		//load the texture with stbi
 		unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, STBI_rgb_alpha);

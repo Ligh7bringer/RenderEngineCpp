@@ -13,8 +13,11 @@ class Loader {
 public:
     static RawModel loadToVAO(std::vector<float> &positions, std::vector<unsigned int> &indices, std::vector<float> &normals,
                                   std::vector<float> &texCoords);
-    static RawModel loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices, std::vector<glm::vec3> &normals,
-                              std::vector<glm::vec2> &texCoords);
+    static RawModel loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices,
+                                 std::vector<glm::vec3> &normals, std::vector<glm::vec2> &texCoords,
+                                 std::vector<glm::vec3> &tangents);
+    static RawModel loadToVao(std::vector<glm::vec3> &positions, std::vector<unsigned int> &indices,
+                              std::vector<glm::vec3> &normals, std::vector<glm::vec2> &texCoords);
     static RawModel loadToVao(std::vector<float> &positions, int dimensions);
     static void cleanUp();
     static unsigned int loadTexture(const std::string &fileName);

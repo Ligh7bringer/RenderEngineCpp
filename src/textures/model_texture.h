@@ -52,6 +52,14 @@ public:
         ModelTexture::_numOfRows = _numOfRows;
     }
 
+    unsigned int getNormalMap() const {
+        return _normalMap;
+    }
+
+    void setNormalMap(unsigned int normalMap) {
+        _normalMap = normalMap;
+    }
+
 private:
     unsigned int _ID;
     float _shineDamper;
@@ -59,6 +67,7 @@ private:
     bool _hasTransparency;
     bool _fakeLighting;
     int _numOfRows;
+    unsigned int _normalMap;
 };
 
 
