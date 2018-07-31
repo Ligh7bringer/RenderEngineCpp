@@ -21,6 +21,7 @@
 #include <water/water_tile.h>
 #include <water/water_renderer.h>
 #include <water/water_frame_buffers.h>
+#include <particles/particle_master.h>
 
 structlog LOGCFG = {};
 
@@ -140,13 +141,21 @@ int main() {
     WaterFrameBuffers fbos = WaterFrameBuffers();
     WaterRenderer waterRenderer = WaterRenderer(waterShader, MasterRenderer::get_projectionMatrix(), fbos);
 
+    ParticleMaster particleMaster = ParticleMaster(MasterRenderer::get_projectionMatrix());
+
     // Rendering Loop
     while (WindowManager::shouldClose() == 0) {
         //handle keyboard input
         cam.move();
         player.move(terrain);
+        particleMaster.update();
 
-        check_gl_error();
+        if(glfwGetKey(WindowManager::getWindow(), GLFW_KEY_P) == GLFW_PRESS) {
+            auto pos = player.getPosition();
+            particleMaster.addParticle(pos);
+        }
+
+        //check_gl_error();
 
         glEnable(GL_CLIP_DISTANCE0);
         //render to fbos
@@ -174,9 +183,12 @@ int main() {
         MasterRenderer::renderScene(entities, normalMapEnts, terrain, lights, cam, player,
                                     glm::vec4{0, 1.f, 0, 10000.f});
         waterRenderer.render(water, cam, light);
+
+        particleMaster.render(cam);
+
         GuiRenderer::render(guis);
 
-        check_gl_error();
+        //check_gl_error();
 
         //update window
         WindowManager::updateWindow();
