@@ -11,6 +11,8 @@ An OpenGL render engine based on the tutorials made by [ThinMatrix](https://www.
 * Phong shading and lighting optimisations.
 * Terrain generation.
 * Realistic water with reflections and refraction.
+* GUI rendering.
+* Skybox, day-night cycle and fog.
 * Probably other things that I am forgetting.
 
 # Building
