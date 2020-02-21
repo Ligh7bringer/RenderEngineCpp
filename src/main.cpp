@@ -141,7 +141,7 @@ int main() {
     WaterFrameBuffers fbos = WaterFrameBuffers();
     WaterRenderer waterRenderer = WaterRenderer(waterShader, MasterRenderer::get_projectionMatrix(), fbos);
 
-    ParticleMaster particleMaster = ParticleMaster(MasterRenderer::get_projectionMatrix());
+    ParticleMaster particleMaster(MasterRenderer::get_projectionMatrix());
 
     // Rendering Loop
     while (WindowManager::shouldClose() == 0) {
@@ -154,8 +154,6 @@ int main() {
             auto pos = player.getPosition();
             particleMaster.addParticle(pos);
         }
-
-        //check_gl_error();
 
         glEnable(GL_CLIP_DISTANCE0);
         //render to fbos

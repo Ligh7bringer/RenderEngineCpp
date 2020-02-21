@@ -19,8 +19,7 @@ bool Particle::update() {
     _position += change;
     _elapsedTime += dt;
 
-    LOG(DEBUG) << "CHANGE: " << glm::to_string(change);
-    LOG(DEBUG) << "POSITION: " << glm::to_string(_position);
+
 
     return _elapsedTime < _lifeLength;
 }
