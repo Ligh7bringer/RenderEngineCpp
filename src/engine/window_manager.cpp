@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 #include <string>
+#include <cassert>
 #include <iostream>
 
 GLFWwindow* WindowManager::_window = nullptr;
@@ -14,6 +15,32 @@ glm::vec2 WindowManager::_scrollOld = {0.f, 0.f};
 glm::vec2 WindowManager::_scrollDelta = {0.f, 0.f};
 glm::vec2 WindowManager::_cursorPos = {0.f, 0.f};
 glm::vec2 WindowManager::_cursorDelta = {0.f, 0.f};
+
+void OpenGLMessageCallback(unsigned source,
+    unsigned type,
+    unsigned id,
+    unsigned severity,
+    int length,
+    const char* message,
+    const void* userParam)
+{
+    switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH:
+        LOG(ERR) << message;
+        return;
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        LOG(WARN) << message;
+        return;
+    case GL_DEBUG_SEVERITY_LOW:
+        LOG(DEBUG) << message;
+        return;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+        //LOG(INFO) << message;
+        return;
+    }
+
+    assert(false && "Unknown severity level!");
+}
 
 void WindowManager::createWindow(const glm::vec2 &size, const std::string &title) {
     _title = title;
@@ -54,6 +81,14 @@ void WindowManager::createWindow(const glm::vec2 &size, const std::string &title
     };
 
     _lastFrameTime = glfwGetTime();
+
+    // During init, enable debug output
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+
+    //glDebugMessageControl(
+    //    GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
 }
 
 void WindowManager::updateWindow() {
